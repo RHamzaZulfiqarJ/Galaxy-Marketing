@@ -23,6 +23,7 @@ import {
   Notifications,
   Inventory,
   Societies,
+  Ledger,
 } from "./Pages";
 import { Navbar, Sidebar } from "./Components";
 import { useSelector } from "react-redux";
@@ -70,7 +71,7 @@ const App = () => {
           <SettingSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
         </div>
         <div className="w-full sticky">
-          <SettingNavbar showSidebar={showSidebar} setShowSidebar={setShowSidebar}  />
+          <SettingNavbar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
         </div>
       </div>
     );
@@ -118,8 +119,10 @@ const App = () => {
                   <Route path="/leads/refund" element={<RefundForm />} />
                   <Route path="/myLeads" element={<Leads type="mine" />} />
                   <Route path="/leads" element={<Leads type="all" />} />
+                  <Route path="/leads/ledger" element={<Ledger />} />
                   <Route path="/leads/:leadId" element={<Lead />} />
-                  <Route path="/leads/followUps" element={<FollowUps />} />
+                  <Route path="/leads/followUps" element={<Navigate to='/leads' />} />
+                  <Route path="/leads/followUps/:leadId" element={<FollowUps />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/employees" element={<Employees />} />
                   <Route path="/clients" element={<Clients />} />

@@ -57,7 +57,6 @@ export const deleteUser = (userId) => API.delete(`/user/delete/${userId}`)
 
 // TASK
 export const getTasks = () => API.get(`/task/get/all`)
-export const getArchivedTasks = () => API.get(`/task/get/archived`)
 export const getTask = (taskId) => API.get(`/task/get/single/${taskId}`)
 export const searchTask = (searchTerm) => API.get(`/task/search?searchTerm=${searchTerm}`)
 export const filterTask = (filters) => API.get(`/task/filter?${objectToQueryString(filters)}`)
@@ -104,15 +103,23 @@ export const deleteApproval = (approvalId) => API.delete(`/approval/delete/${app
 export const getLead = (leadId) => API.get(`/lead/get/single/${leadId}`)
 export const getLeads = () => API.get(`/lead/get/all`)
 export const getEmployeeLeads = () => API.get(`/lead/get/employee`)
-export const getArchivedLeads = () => API.get(`/lead/get/archived`)
 export const getLeadsStat = () => API.get(`/lead/get/stats`)
 export const searchLead = (searchTerm) => API.get(`/lead/search?searchTerm=${searchTerm}`)
 export const filterLead = (filters) => API.get(`/lead/filter?${objectToQueryString(filters)}`)
+export const createLead = (leadData) => API.post(`/lead/create`, leadData)
 export const createOnsiteLead = (leadData) => API.post(`/lead/create/onsite`, leadData)
 export const createOnlineLead = (leadData) => API.post(`/lead/create/online`, leadData)
 export const updateLead = (leadId, leadData) => API.put(`/lead/update/${leadId}`, leadData)
+export const shiftLead = (leadId, shiftTo) => API.put(`/lead/update/shift/${leadId}`, { shiftTo })
+export const shareLead = (leadId, shareWith) => API.put(`/lead/update/share/${leadId}`, { shareWith })
 export const archiveLead = (leadId) => API.put(`/lead/archive/${leadId}`)
 export const deleteLead = (leadId) => API.delete(`/lead/delete/${leadId}`)
+
+// FOLLOW UPS
+export const getFollowUp = (followUpId) => API.get(`/followUp/get/single/${followUpId}`)
+export const getFollowUps = (leadId) => API.get(`/followUp/get/all/${leadId}`)
+export const createFollowUp = (followUpData) => API.post(`/followUp/create`, followUpData)
+export const deleteFollowUp = (followUpId) => API.delete(`/followUp/delete/${followUpId}',`)
 
 // PROJECT
 export const getProject = (projectId) => API.get(`/project/get/single/${projectId}`)

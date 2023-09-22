@@ -1,31 +1,51 @@
 import { Button, Dialog, DialogContent, DialogTitle, Divider, Slide } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PiXLight } from "react-icons/pi";
-import { Upload } from "../../../utils";
+import { Loader, Upload } from "../../../utils";
 import ImageGallery from "./ImageGallery";
 import ImageGalleryModal from "./ImageGalleryModal";
+import { useSelector } from "react-redux";
+import { updateLead } from "../../../redux/action/lead";
+import { deleteAllImagesReducer } from "../../../redux/reducer/upload";
+import { getLead } from "../../../redux/action/lead";
+import { useDispatch } from "react-redux";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const Attachments = ({ open, setOpen }) => {
+const Attachments = ({ open, setOpen, leadId }) => {
   ////////////////////////////////////// VARIABLES  /////////////////////////////////////
-
+  const { urls } = useSelector(state => state.upload)
+  const { isFetching, currentLead } = useSelector(state => state.lead)
+  const dispatch = useDispatch()
+  console.log(currentLead)
   ////////////////////////////////////// STATES  /////////////////////////////////////
-    const [imageUpload, setImageUpload] = useState([]);
-    const [openImageGallery, setOpenImageGallery] = useState(false);
+  const [images, setImages] = useState([]);
+  const [openImageGallery, setOpenImageGallery] = useState(false);
 
   ////////////////////////////////////// USE EFFECTS  /////////////////////////////////////
+  useEffect(() => {
+    console.log('urls in attatchemnts', urls)
+    setImages(urls)
+  }, [urls])
+  useEffect(() => {
+    leadId && dispatch(getLead(leadId))
+  }, [leadId])
+  useEffect(() => {
+    setImages([...currentLead?.images])
+  }, [currentLead])
 
   ////////////////////////////////////// FUNCTIONS  /////////////////////////////////////
   const handleClickOpen = () => {
     setOpenImageGallery(true);
   };
 
-  const handleChange = (e) => {
-    setStatus(e.target.value);
-  };
+  const handleSave = () => {
+    dispatch(updateLead(leadId, { images }))
+    dispatch(deleteAllImagesReducer());
+    setOpen(false)
+  }
 
   return (
     <div>
@@ -36,7 +56,8 @@ const Attachments = ({ open, setOpen }) => {
         onClose={() => setOpen(false)}
         fullWidth="md"
         maxWidth="md"
-        aria-describedby="alert-dialog-slide-description">
+        aria-describedby="alert-dialog-slide-description"
+      >
         <DialogTitle className="flex items-center justify-between">
           <div className="text-xl text-sky-400 font-primary">Attachments</div>
           <div className="cursor-pointer" onClick={() => setOpen(false)}>
@@ -46,15 +67,27 @@ const Attachments = ({ open, setOpen }) => {
 
         <DialogContent>
           <div className="newHotelItem w-full flex flex-wrap justify-start md:items-start items-center gap-[1rem] ">
-            <Upload image={imageUpload} isMultiple={true} />
+            {
+              isFetching
+                ?
+                <div className="w-full flex justify-center items-center ">
+                  <Loader />
+                </div>
+                :
+                <Upload image={images} isMultiple={true} />
+            }
           </div>
           <Divider className="py-4" />
-          <div className="mt-4 flex justify-center pb-4">
-            <Button onClick={() => handleClickOpen()} variant="contained">View All Images</Button>
+          <div className="mt-4 flex justify-end pb-4">
+            <Button onClick={() => handleSave()} variant="contained">
+              {isFetching ? 'Saving...' : 'Save'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
+
       <ImageGalleryModal open={openImageGallery} setOpen={setOpenImageGallery} />
+
     </div>
   );
 };
