@@ -6,14 +6,19 @@ import {
   Input,
   InputAdornment,
   Snackbar,
+  MenuItem,
+  Select,
+  InputLabel,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/action/user";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import validator from "email-validator";
 import { PiEyeSlashThin, PiEyeThin, PiX } from "react-icons/pi";
+import { pakistanCities } from "../../constant";
+import { getProjects } from "../../redux/action/project";
 
 const Signup = () => {
   const PasswordButtonInitialStyle = {
@@ -23,6 +28,8 @@ const Signup = () => {
   /////////////////////////////////// VARIABLES /////////////////////////////////
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { projects } = useSelector((state) => state.project);
+  const projectsTitles = projects.map(({ _id, title }) => ({ _id, title }));
   const { isFetching, error } = useSelector((state) => state.user);
 
   /////////////////////////////////// STATES /////////////////////////////////////
@@ -32,6 +39,8 @@ const Signup = () => {
     username: "",
     phone: "",
     email: "",
+    city: "",
+    project: "",
     password: "",
   });
   const [inputError, setInputError] = useState({
@@ -40,16 +49,22 @@ const Signup = () => {
     username: "",
     phone: "",
     email: "",
+    project: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordButton, setShowPasswordButton] = useState(PasswordButtonInitialStyle);
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const [selectedValue, setSelectedValue] = React.useState("");
 
-  /////////////////////////////////// USE EFFECTS ////////////////////////////////
+  //////////////////////////////////////// USE EFFECTS ////////////////////////////////
+  useEffect(() => {
+    dispatch(getProjects());
+  }, []);
 
   /////////////////////////////////// FUNCTIONS //////////////////////////////////
-  const handleChange = (e) => {
+  const handleChange = (field, value) => {
+    console.log("e", field, value);
     const { firstName, lastName, username, email, phone, password } = userData;
 
     if (firstName.length > 3) setInputError((pre) => ({ ...pre, firstName: "" }));
@@ -59,7 +74,7 @@ const Signup = () => {
     if (phone.length >= 10) setInputError((pre) => ({ ...pre, phone: "" }));
     if (password.length > 6) setInputError((pre) => ({ ...pre, password: "" }));
 
-    setUserData((pre) => ({ ...pre, [e.target.name]: e.target.value }));
+    setUserData((pre) => ({ ...pre, [field]: value }));
   };
 
   const handleSubmit = (e) => {
@@ -85,8 +100,7 @@ const Signup = () => {
         ...pre,
         username: "Username should be atleast of 3 characters",
       }));
-    if (!email) return setInputError((pre) => ({ ...pre, email: "Email is required" }));
-    if (!validator.validate(email))
+    if (email && !validator.validate(email))
       return setInputError((pre) => ({ ...pre, email: "Make sure to provide a valid email" }));
     if (!phone) return setInputError((pre) => ({ ...pre, phone: "Phone Number is required" }));
     if (phone.length < 10)
@@ -98,6 +112,7 @@ const Signup = () => {
         password: "Password must be of atleast 6 characters",
       }));
 
+    console.log(userData);
     dispatch(register(userData, navigate));
   };
 
@@ -122,11 +137,11 @@ const Signup = () => {
   };
 
   return (
-    <div className="font-primary">
-      <div className="md:opacity-100 opacity-0 left-0 bottom-0 absolute h-[52%] w-[25%]">
+    <div className="font-primary w-full h-full ">
+      <div className="md:opacity-100 opacity-0 left-0 bottom-[-20%] absolute h-[52%] w-[25%]">
         <img src="/images/login-1.png" />
       </div>
-      <div className="w-full h-screen ">
+      <div className="pb-10">
         <div className="flex justify-center pt-8">
           <img className="w-41 h-11" src="/favicon/GrowLOGO.png" />
         </div>
@@ -142,11 +157,11 @@ const Signup = () => {
               onSubmit={handleSubmit}
               className="flex flex-col gap-[12px] w-auto pl-[2rem] pt-[1rem] ">
               <div className="flex flex-col gap-6">
+                {/* firstname */}
                 <Input
                   type="text"
-                  name="firstName"
                   value={userData.firstName}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
                   placeholder="First Name"
                   variant="standard"
                   className="w-[20rem] h-[40px] px-[8px]"
@@ -169,11 +184,11 @@ const Signup = () => {
                     </Alert>
                   </Snackbar>
                 )}
+                {/* lastname */}
                 <Input
                   type="text"
-                  name="lastName"
                   value={userData.lastName}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
                   placeholder="Last Name"
                   variant="standard"
                   className="w-[20rem] h-[40px] px-[8px]"
@@ -196,11 +211,11 @@ const Signup = () => {
                     </Alert>
                   </Snackbar>
                 )}
+                {/* username */}
                 <Input
                   type="text"
-                  name="username"
                   value={userData.username}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange("username", e.target.value)}
                   placeholder="Username"
                   variant="standard"
                   className="w-[20rem] h-[40px] px-[8px]"
@@ -223,11 +238,71 @@ const Signup = () => {
                     </Alert>
                   </Snackbar>
                 )}
+                {/* city */}
+                <FormControl>
+                  {selectedValue === "" ? (
+                    <InputLabel
+                      sx={{
+                        color: "#B3B3B3",
+                        fontFamily: "'Montserrat', sans-serif",
+                        paddingTop: "8px",
+                      }}>
+                      City
+                    </InputLabel>
+                  ) : null}
+                  <Select
+                    placeholder="City"
+                    type="text"
+                    value={userData.city}
+                    onChange={(e) => handleChange("city", e.target.value)}
+                    size="small"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    variant="standard"
+                    className="w-[20rem] h-[40px] px-[8px]">
+                    <MenuItem disabled value="city">
+                      <em>City</em>
+                    </MenuItem>
+                    {pakistanCities.map((item, index) => (
+                      <MenuItem value={item} key={index}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* project */}
+                <FormControl>
+                  {selectedValue === "" ? (
+                    <InputLabel
+                      sx={{
+                        color: "#B3B3B3",
+                        fontFamily: "'Montserrat', sans-serif",
+                        paddingTop: "8px",
+                      }}>
+                      Project
+                    </InputLabel>
+                  ) : null}
+                  <Select
+                    value={userData.project}
+                    onChange={(e) => {
+                      handleChange("project", e.target.value);
+                    }}
+                    type="text"
+                    size="small"
+                    variant="standard"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    className="w-[20rem] h-[40px] px-[8px]">
+                    {projectsTitles.map((project, index) => (
+                      <MenuItem value={project._id} key={index}>
+                        {project.title}{" "}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* phone */}
                 <Input
                   type="number"
-                  name="phone"
                   value={userData.phone}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange("phone", e.target.value)}
                   placeholder="Phone"
                   variant="standard"
                   style={{ fontFamily: "'Montserrat', sans-serif" }}
@@ -250,11 +325,11 @@ const Signup = () => {
                     </Alert>
                   </Snackbar>
                 )}
+                {/* email */}
                 <Input
                   type="email"
-                  name="email"
                   value={userData.email}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange("email", e.target.value)}
                   placeholder="Email"
                   variant="standard"
                   className="w-[20rem] h-[40px] px-[8px]"
@@ -280,9 +355,8 @@ const Signup = () => {
                 <FormControl>
                   <Input
                     type={showPassword ? "text" : "password"}
-                    name="password"
                     value={userData.password}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange("password", e.target.value)}
                     onKeyDown={changeBackgroundColor}
                     placeholder="Password"
                     variant="standard"
