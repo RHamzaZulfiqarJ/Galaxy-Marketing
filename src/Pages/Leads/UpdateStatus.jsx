@@ -1,14 +1,12 @@
 import { Close } from "@mui/icons-material";
 import {
+  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  MenuItem,
-  Modal,
-  Select,
   Slide,
+  TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -17,6 +15,7 @@ import { updateLead } from "../../redux/action/lead";
 import { PiXLight } from "react-icons/pi";
 import { Loader } from "../../utils";
 import { getLeadReducer } from "../../redux/reducer/lead";
+import { CFormSelect } from "@coreui/react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -26,7 +25,18 @@ const UpateStatusModal = ({ open, setOpen }) => {
   ////////////////////////////////////// VARIABLES  /////////////////////////////////////
   const dispatch = useDispatch();
   const { currentLead, isFetching } = useSelector((state) => state.lead);
-
+  const statuses = [
+    { name: "Closed (Lost)", value: "closedLost" },
+    { name: "Followed Up (Call)", value: "followedUpCall" },
+    { name: "Contacted Client (Call Attempt)", value: "contactedCallAttempt" },
+    { name: "Contacted Client (Call)", value: "contactedCall" },
+    { name: "Followed Up (Email)", value: "followedUpEmail" },
+    { name: "Contacted Client (Email)", value: "contactedEmail" },
+    { name: "New", value: "new" },
+    { name: "Meeting (Done)", value: "meetingDone" },
+    { name: "Closed (Won)", value: "closedWon" },
+    { name: "Meeting (Attempt)", value: "meetingAttempt" },
+  ];
   ////////////////////////////////////// STATES  /////////////////////////////////////
   const [status, setStatus] = useState(currentLead?.status);
 
@@ -39,11 +49,8 @@ const UpateStatusModal = ({ open, setOpen }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(updateLead(currentLead?._id, { status }));
-    dispatch(getLeadReducer(null))
+    dispatch(getLeadReducer(null));
     setOpen(false);
-  };
-  const handleChange = (e) => {
-    setStatus(e.target.value);
   };
 
   return (
@@ -73,18 +80,26 @@ const UpateStatusModal = ({ open, setOpen }) => {
                 <tr>
                   <td className="pb-4 text-lg">Status </td>
                   <td className="pb-4 w-64">
-                    <Select name='status' value={status} onChange={handleChange} type="text" size="small" fullWidth>
-                      <MenuItem value="closedLost">Closed (Lost)</MenuItem>
-                      <MenuItem value="followedUpCall">Followed Up (Call)</MenuItem>
-                      <MenuItem value="contactedCallAttempt">Contacted Client (Call Attempt)</MenuItem>
-                      <MenuItem value="contactedCall">Contacted Client (Call)</MenuItem>
-                      <MenuItem value="followedUpEmail">Followed Up (Email)</MenuItem>
-                      <MenuItem value="contactedEmail">Contacted Client (Email)</MenuItem>
-                      <MenuItem value="new">New</MenuItem>
-                      <MenuItem value="meetingDone">Meeting (Done)</MenuItem>
-                      <MenuItem value="closedWon">Closed (Won)</MenuItem>
-                      <MenuItem value="meetingAttempt">Meeting (Attempt)</MenuItem>
-                    </Select>
+                    <CFormSelect
+                    value={status}
+                      onChange={(e, input) => handleChange("status", input.value)}
+                      className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
+                      {statuses.map((item, key) => (
+                        <option key={key} value={item.value}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </CFormSelect>
+                    {/* <Autocomplete
+                    size="small"
+                    disablePortal={false}
+                    options={statuses}
+                    value={status}
+                    getOptionLabel={(status) => status.name ? status.name :status}
+                    onChange={(e, status) => setStatus(status.value)}
+                    className="w-full"
+                    renderInput={(params) => <TextField  {...params} autoComplete="false" fullWidth />}
+                  /> */}
                   </td>
                 </tr>
               </table>
@@ -107,7 +122,6 @@ const UpateStatusModal = ({ open, setOpen }) => {
         </DialogActions>
       </Dialog>
     </div>
- 
   );
 };
 

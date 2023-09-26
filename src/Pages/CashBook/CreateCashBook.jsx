@@ -12,11 +12,11 @@ import {
   DialogActions,
   TextField,
   Autocomplete,
-  MenuItem,
-  Select,
 } from "@mui/material";
 import { PiNotepad, PiXLight } from "react-icons/pi";
 import { getClients, getEmployees } from "../../redux/action/user";
+import cashbook from "../../redux/reducer/cashbook";
+import { CFormSelect } from "@coreui/react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -29,16 +29,22 @@ function CreateCashBook({ open, setOpen, scroll }) {
   const navigate = useNavigate();
   const { currentLead: lead } = useSelector(state => state.lead)
   const { employees, clients } = useSelector(state => state.user)
+  const paymentTypes = [
+    { name: 'Cash', value: 'cash' },
+    { name: 'Cheque', value: 'cheque' },
+    { name: 'Credit Card', value: 'creditCard' },
+    { name: 'Online', value: 'online' },
+  ]
   const initialCashbookState = {
     staff: "",
-    clientName: lead?.client?.username,
+    clientName: "",
     remarks: "",
     top: "",
     amount: 0,
     type: '',
   }
 
-   const [cashbookData, setCashbookData] = useState(initialCashbookState);
+  const [cashbookData, setCashbookData] = useState(initialCashbookState);
 
   ///////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////////
   useEffect(() => {
@@ -46,19 +52,18 @@ function CreateCashBook({ open, setOpen, scroll }) {
     dispatch(getClients())
   }, [open])
   useEffect(() => {
-    setCashbookData({ ...cashbookData, staff: lead?.client?.username })
+    setCashbookData({ ...cashbookData })
   }, [lead])
 
 
   ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////
 
-  const handleChange = (e) => {
-    e.preventDefault();
-    setCashbookData((pre) => ({ ...pre, [e.target.name]: e.target.value }));
+  const handleChange = (field, value) => {
+    setCashbookData((pre) => ({ ...pre, [field]: value }));
   };
 
   const handleSubmit = (e) => {
-     dispatch(createCashbook({ ...cashbookData, leadId: lead?._id, clientName: lead?.client?.username }));
+    dispatch(createCashbook({ ...cashbookData, leadId: lead?._id, clientName: lead?.client?.username }));
     setOpen(false);
     setCashbookData(initialCashbookState);
   };
@@ -95,53 +100,55 @@ function CreateCashBook({ open, setOpen, scroll }) {
               <tr>
                 <td className="pb-4 text-lg">Staff </td>
                 <td className="pb-4">
-                  <Select
-                    onChange={handleChange}
+                {/* <CFormSelect
                     value={cashbookData.staff}
-                    name="staff"
+                    onChange={(e, input) => handleChange("staff", input.value)}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
+                    {employees.map((item, key) => (
+                      <option key={key} value={item.value}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </CFormSelect> */}
+                  <Autocomplete
                     size="small"
-                    fullWidth>
-                    {
-                      employees.map((employee, index) => (
-                        <MenuItem key={index} value={employee?._id}>{employee?.username}</MenuItem>
-                      ))
-                    }
-                  </Select>
+                    disablePortal
+                    options={employees}
+                    value={cashbookData.staff}
+                    getOptionLabel={(employee) => employee?.firstName ? employee.firstName : employee}
+                    onChange={(e, employee) => handleChange('staff', employee.username)}
+                    className="w-full"
+                    renderInput={(params) => <TextField   {...params}  fullWidth />}
+                  />
                 </td>
               </tr>
               <tr>
                 <td className="pb-4 text-lg">Customer Name </td>
                 <td className="pb-4">
-                  <Select
-                    disabled={lead?.client}
-                    onChange={handleChange}
-                    value={cashbookData.clientName}
-                    name="staff"
+                  <TextField
                     size="small"
-                    fullWidth>
-                    {
-                      clients.map((client, index) => (
-                        <MenuItem key={index} value={client?._id}>{client?.username}</MenuItem>
-                      ))
-                    }
-                  </Select>
-
+                    disablePortal={true}
+                    options={clients}
+                    value={cashbookData.clientName}
+                    onChange={(e, client) => handleChange('clientName', client.username)}
+                    className="w-full"
+                    renderInput={(params) => <TextField   {...params} autoComplete="false" fullWidth />}
+                  />
                 </td>
               </tr>
               <tr>
                 <td className="pb-4 text-lg">Payment Type </td>
                 <td className="pb-4">
-                  <Select
-                    name="top"
-                    value={cashbookData.top}
-                    onChange={handleChange}
+                  <Autocomplete
                     size="small"
-                    fullWidth>
-                    <MenuItem value="Cash">Cash</MenuItem>
-                    <MenuItem value="Cheque">Cheque</MenuItem>
-                    <MenuItem value="Credit Card">Credit Card</MenuItem>
-                    <MenuItem value="Online">Online</MenuItem>
-                  </Select>
+                    disablePortal={false}
+                    options={paymentTypes}
+                    value={cashbookData.top}
+                    getOptionLabel={(top) => top?.name ? top.name : top}
+                    onChange={(e, top) => handleChange('top', top.value)}
+                    className="w-full"
+                    renderInput={(params) => <TextField   {...params} autoComplete="false" fullWidth />}
+                  />
                 </td>
               </tr>
               <tr>
@@ -150,7 +157,7 @@ function CreateCashBook({ open, setOpen, scroll }) {
                   <TextField
                     name="amount"
                     value={cashbookData.amount}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange('amount', e.target.value)}
                     size="small"
                     fullWidth
                   />
@@ -159,15 +166,16 @@ function CreateCashBook({ open, setOpen, scroll }) {
               <tr>
                 <td className="pb-4 text-lg">Type </td>
                 <td className="pb-4">
-                  <Select
-                    name="type"
-                    value={cashbookData.type}
-                    onChange={handleChange}
+                  <Autocomplete
                     size="small"
-                    fullWidth>
-                    <MenuItem value="in">In</MenuItem>
-                    <MenuItem value="out">Out</MenuItem>
-                  </Select>
+                    disablePortal
+                    options={[{ name: 'In', value: 'in' }, { name: 'Out', value: 'out' }]}
+                    value={cashbookData.type}
+                    getOptionLabel={(type) => type?.name ? type.name : type}
+                    onChange={(e, type) => handleChange('type', type.value)}
+                    className="w-full"
+                    renderInput={(params) => <TextField   {...params} autoComplete="false" fullWidth />}
+                  />
                 </td>
               </tr>
               <tr>
@@ -178,7 +186,7 @@ function CreateCashBook({ open, setOpen, scroll }) {
                     multiline
                     rows={4}
                     value={cashbookData.remarks}
-                    onChange={handleChange}
+                    onChange={(e) => handleChange('remarks', e.target.value)}
                     size="small"
                     fullWidth
                   />
