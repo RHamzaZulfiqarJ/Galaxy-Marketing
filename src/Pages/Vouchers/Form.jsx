@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { createVoucher } from "../../redux/action/voucher";
+import { getClients } from "../../redux/action/user";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,7 +18,8 @@ import {
   MenuItem,
 } from "@mui/material";
 import { PiNotepad, PiXLight } from "react-icons/pi";
-import JsBarcode from 'jsbarcode';
+import { CFormSelect } from "@coreui/react";
+import JsBarcode from "jsbarcode";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -29,6 +31,7 @@ const FORM = ({ open, setOpen, scroll }) => {
   ////////////////////////////////////// VARIBALES ///////////////////////////////////
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { clients } = useSelector((state) => state.user);
   const initialVoucherState = {
     branch: "",
     issuingDate: "",
@@ -36,23 +39,26 @@ const FORM = ({ open, setOpen, scroll }) => {
     clientName: "",
     cnic: "",
     phone: "",
+    project: "",
+    propertyType: "",
+    Area: "",
     type: "",
     total: "",
     paid: "",
     remained: "",
   };
-  const barcodeValue = 'AD157491594D5';
+  const barcodeValue = "AD157491594D5";
 
   // Create a barcode canvas using JsBarcode
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   JsBarcode(canvas, barcodeValue, {
-    format: 'CODE128', // You can choose a barcode format
+    format: "CODE128", // You can choose a barcode format
     width: 2,
     height: 50,
   });
 
   // Convert the canvas to an image
-  const barcodeImage = canvas.toDataURL('image/png');
+  const barcodeImage = canvas.toDataURL("image/png");
 
   ////////////////////////////////////// STATES //////////////////////////////////////
   const [modalVisible, setModalVisible] = useState(false);
@@ -60,8 +66,10 @@ const FORM = ({ open, setOpen, scroll }) => {
   const [voucherData, setVoucherData] = useState(initialVoucherState);
 
   ////////////////////////////////////// Use Effects ///////////////////////////////////////////
+  useEffect(() => {
+    dispatch(getClients());
+  }, [open]);
 
-  
   ////////////////////////////////////// FUNCTIONS ////////////////////////////////////////
 
   const handleInputChange = (event) => {
@@ -142,6 +150,26 @@ const FORM = ({ open, setOpen, scroll }) => {
                 { text: `${voucherData.type}`, alignment: "center" },
                 { text: `${voucherData.paid}`, alignment: "center" },
                 { text: `${voucherData.dueDate}`, alignment: "center" },
+              ],
+            ],
+          },
+        },
+
+        {
+          margin: [0, 5, 0, 0],
+          table: {
+            headerRows: 1,
+            widths: [160, 160, 160],
+            body: [
+              [
+                { text: "Project", alignment: "center", bold: true, fillColor: "#dddddd" },
+                { text: "Property Type", alignment: "center", bold: true, fillColor: "#dddddd" },
+                { text: "Area", alignment: "center", bold: true, fillColor: "#dddddd" },
+              ],
+              [
+                { text: `${voucherData.project}`, alignment: "center" },
+                { text: `${voucherData.propertyType}`, alignment: "center" },
+                { text: `${voucherData.Area} Marla`, alignment: "center" },
               ],
             ],
           },
@@ -301,10 +329,9 @@ const FORM = ({ open, setOpen, scroll }) => {
                 <td className="pb-4">
                   <TextField
                     name="clientName"
-                    value={voucherData.clientName}
                     onChange={handleInputChange}
+                    value={voucherData.clientName}
                     size="small"
-                    type="text"
                     fullWidth
                   />
                 </td>
@@ -336,19 +363,53 @@ const FORM = ({ open, setOpen, scroll }) => {
                 </td>
               </tr>
               <tr>
+                <td className="pb-4 text-lg">Project </td>
+                <td className="pb-4">
+                  <CFormSelect
+                    value={voucherData.project}
+                    name="project"
+                    options={["Select an Option", "Project 1", "Project 2", "Project 3"]}
+                    onChange={handleInputChange}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="pb-4 text-lg">Property Type </td>
+                <td className="pb-4">
+                  <CFormSelect
+                    name="propertyType"
+                    value={voucherData.propertyType}
+                    onChange={handleInputChange}
+                    options={["Select an Option", "Residential", "Commercial", "Industrial", "Agricultural", "Other"]}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black"
+                  />
+                </td>
+              </tr>
+              <tr>
                 <td className="pb-4 text-lg">Payment Type </td>
                 <td className="pb-4">
-                  <Select
+                  <CFormSelect
                     name="type"
                     value={voucherData.type}
                     onChange={handleInputChange}
+                    options={["Select an Option", "Cash", "Cheque", "Credit Card", "Online"]}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="pb-4 text-lg">Area </td>
+                <td className="pb-4">
+                  <TextField
+                    name="Area"
+                    value={voucherData.Area}
+                    onChange={handleInputChange}
                     size="small"
-                    fullWidth>
-                    <MenuItem value="cash">Cash</MenuItem>
-                    <MenuItem value="cheque">Cheque</MenuItem>
-                    <MenuItem value="creditCard">Credit Card</MenuItem>
-                    <MenuItem value="online">Onlone</MenuItem>
-                  </Select>
+                    type="text"
+                    fullWidth
+                    placeholder="Area in Marla"
+                  />
                 </td>
               </tr>
               <tr>

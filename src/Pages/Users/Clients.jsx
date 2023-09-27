@@ -119,13 +119,13 @@ const Clients = () => {
       width: "200",
       renderCell: (params) => <div className="capitalize font-primary">{params.row.username}</div>,
     },
-    {
-      field: "email",
-      headerName: "Client Email",
-      headerClassName: "super-app-theme--header",
-      width: "200",
-      renderCell: (params) => <div className="font-primary">{params.row.email}</div>,
-    },
+    // {
+    //   field: "email",
+    //   headerName: "Client Email",
+    //   headerClassName: "super-app-theme--header",
+    //   width: "200",
+    //   renderCell: (params) => <div className="font-primary">{params.row.email}</div>,
+    // },
     {
       field: "phone",
       headerName: "Phone",
@@ -159,13 +159,6 @@ const Clients = () => {
             <IoOpenOutline
               onClick={() => handleClickOpen(params.row._id)}
               className="cursor-pointer text-orange-500 text-[23px] hover:text-orange-400"
-            />
-          </Tooltip>
-          <Tooltip placement="top" title="Edit" arrow>
-            {" "}
-            <CiEdit
-              onClick={() => handleOpenEditModal(params.row)}
-              className="cursor-pointer text-green-500 text-[23px] hover:text-green-600"
             />
           </Tooltip>
         </div>

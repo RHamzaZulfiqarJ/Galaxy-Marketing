@@ -13,6 +13,7 @@ import {
   PiAlarm,
   PiBell,
   PiGear,
+  PiKeyLight,
   PiList,
   PiListChecks,
   PiSignOutLight,
@@ -21,6 +22,7 @@ import {
 } from "react-icons/pi";
 import { getNotifications } from "../../redux/action/notification";
 import { getTasks } from "../../redux/action/task";
+import ChangePassword from "../../Pages/Auth/ChangePassword";
 
 const blue = {
   100: "#DAECFF",
@@ -102,6 +104,7 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
 
   /////////////////////////////////////////// STATES ////////////////////////////////////////////////
   const [date, setDate] = useState(new Date());
+  const [ openPasswordChange, setOpenPasswordChange ] = useState(false)
 
   /////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////
   useEffect(() => {
@@ -125,8 +128,12 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
     setOpen(true);
   };
 
+  const handleChangePasswordOpen = () => {
+    setOpenPasswordChange(true)
+  }
+
   return (
-    <div className={`${pathname.includes("/settings") ? "hidden" : ""}`}>
+    <div>
       <div
         className={`flex flex-col z-10 sticky top-0 w-full sm:h-[4rem] h-[4rem] bg-white border-b-[1px] border-b-[#eeeff0] font-primary`}>
         <div
@@ -234,13 +241,6 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
                   </IconButton>
                 </Tooltip>
               </Link>
-              <Link to="/settings/dashboard">
-                <Tooltip title="Settings" arrow placement="bottom">
-                  <IconButton className="h-fit hover:text-sky-400" size="small" aria-label="menu">
-                    <PiGear className="text-[25px]" />
-                  </IconButton>
-                </Tooltip>
-              </Link>
 
               <Link to="/employees">
                 <Tooltip title="Add Employee" arrow placement="bottom">
@@ -272,12 +272,19 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
                     className="text-gray-600 flex items-center gap-4 font-primary">
                     <PiSignOutLight className="text-xl" /> Logout
                   </StyledMenuItem>
+                  <StyledMenuItem
+                    onClick={handleChangePasswordOpen}
+                    className="text-gray-600 flex items-center gap-4 font-primary">
+                    <PiKeyLight className="text-xl" /> Change Password
+                  </StyledMenuItem>
                 </Menu>
               </Dropdown>
             </div>
           </div>
         </div>
       </div>
+
+      <ChangePassword open={openPasswordChange} setOpen={setOpenPasswordChange} />
     </div>
   );
 };
