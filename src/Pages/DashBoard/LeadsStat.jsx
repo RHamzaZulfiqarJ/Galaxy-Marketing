@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { getLeadsStat } from "../../redux/action/lead";
 import { useDispatch, useSelector } from "react-redux";
-import { getProjects } from "../../redux/action/project";
 
 
 const priorities = [
@@ -49,7 +48,6 @@ const LeadsStat = () => {
 
   ////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////
   useEffect(() => {
-    dispatch(getProjects())
     dispatch(getLeadsStat(type))
   }, [type])
 
@@ -80,7 +78,8 @@ const LeadsStat = () => {
             onChange={handleChange}
             fullWidth
             size="small">
-            <MenuItem value="property">Projects Vise</MenuItem>
+            <MenuItem value="degree">Degree Vise</MenuItem>
+            <MenuItem value="visa">VISA Vise</MenuItem>
             <MenuItem value="status">Status Vise</MenuItem>
             <MenuItem value="priority">Priority Vise</MenuItem>
             <MenuItem value="source">Source Wise</MenuItem>
