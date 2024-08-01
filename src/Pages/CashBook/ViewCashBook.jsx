@@ -17,6 +17,7 @@ const ViewCashBook = () => {
   ////////////////////////////////////// VARIABLES /////////////////////////////////////
   const dispatch = useDispatch();
   const { cashbooksIn, cashbooksOut, isFetching, error } = useSelector((state) => state.cashbook);
+  const { loggedUser } = useSelector((state) => state.user);
 
   const columns = [
     {
@@ -149,7 +150,7 @@ const ViewCashBook = () => {
           <Table
             rows={cashbooksIn}
             columns={columns}
-            rowsPerPage={5}
+            rowsPerPage={10}
             isFetching={isFetching}
             error={error}
           />
@@ -162,7 +163,7 @@ const ViewCashBook = () => {
           <Table
             rows={cashbooksOut}
             columns={columns}
-            rowsPerPage={5}
+            rowsPerPage={10}
             isFetching={isFetching}
             error={error}
           />

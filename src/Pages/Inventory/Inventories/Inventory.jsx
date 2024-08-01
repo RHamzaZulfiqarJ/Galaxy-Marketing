@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "../../../Components";
 import Topbar from "./Topbar";
 import { useDispatch, useSelector } from "react-redux";
-import { getInventories, updateInventory } from "../../../redux/action/inventory";
+import { getEmployeeInventories, getInventories, updateInventory } from "../../../redux/action/inventory";
 import { getInventoriesReducer, getInventoryReducer, } from "../../../redux/reducer/inventory";
 import { Avatar, AvatarGroup, Tooltip, styled } from "@mui/material";
 import { Dropdown, Menu, MenuButton, MenuItem, menuItemClasses } from "@mui/base";
@@ -95,7 +95,6 @@ function Inventory() {
   const dispatch = useDispatch();
   const { inventories, allInventories, isFetching, error } = useSelector((state) => state.inventory);
   const { loggedUser } = useSelector(state => state.user)
-  console.log(inventories)
   const columns = [
     {
       field: "uid",
@@ -148,7 +147,7 @@ function Inventory() {
       width: 180,
       renderCell: (params) => (
         <Tooltip title={""}>
-          <span className="font-primary capitalize">{console.log(params.row.project?.title)}</span>
+          <span className="font-primary capitalize">{params.row.project?.title}</span>
         </Tooltip>
       ),
     },
@@ -251,7 +250,11 @@ function Inventory() {
 
   ////////////////////////////////////// USE EFFECTS //////////////////////////////
   useEffect(() => {
-    dispatch(getInventories());
+    loggedUser?.role == 'employee'
+      ?
+      dispatch(getInventories())
+      :
+      dispatch(getEmployeeInventories());
   }, [options.showArchivedInventories]);
 
   useEffect(() => {
@@ -306,18 +309,12 @@ function Inventory() {
           <Kanban options={options} setOptions={setOptions} />
           :
           <div className="flex justify-center items-center " >
-            {
-              isFetching
-                ?
-                <Loader />
-                :
-                <Table
-                  rows={options.showArchivedInventories ? archivedInventories : unarchivedInventories}
-                  columns={columns}
-                  rowsPerPage={10}
-                  error={error}
-                />
-            }
+            <Table
+              rows={options.showArchivedInventories ? archivedInventories : unarchivedInventories}
+              columns={columns}
+              rowsPerPage={10}
+              isFetching={isFetching}
+            />
           </div>
       }
     </div>

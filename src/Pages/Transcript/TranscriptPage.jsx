@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
 import { getDeductions } from "../../redux/action/deduction";
+import QRCode from 'qrcode.react'
 
 const TranscriptPage = ({ }) => {
   ////////////////////////////////////// VARIABLES ///////////////////////////////////
@@ -54,7 +55,7 @@ const TranscriptPage = ({ }) => {
   return (
     <div ref={pdfRef} className="completePdfPage w-full my-4 font-primary">
       <div className="flex justify-center">
-        <img className="h-12" src="/background/A-consultant-logo.png" alt="" />
+        <img className="h-28" src="/images/adotmarketinglogo.png" alt="" />
       </div>
       <div className="my-10 flex justify-center">
         <table className="flex flex-col gap-4">
@@ -69,6 +70,12 @@ const TranscriptPage = ({ }) => {
             <td className="w-[18rem] text-lg">{currentTranscript?.salaryMonth}</td>
             <th className="px-10 text-lg">Designation :</th>
             <td className="px-10 text-lg">{currentTranscript?.designation}</td>
+          </tr>
+          <tr>
+            <th className="px-10 text-lg">Salary Type :</th>
+            <td className="w-[18rem] text-lg">{currentTranscript?.salaryType}</td>
+            <th className="px-10 text-lg">Phone Number :</th>
+            <td className="px-10 text-lg">{currentTranscript?.phone}</td>
           </tr>
         </table>
       </div>
@@ -92,7 +99,7 @@ const TranscriptPage = ({ }) => {
           </tr>
           <tr className="border-b-[1px] border-gray-700 px-10 pt-2 flex justify-between ">
             <td className="text-lg pb-4">Day Offs</td>
-            <td className="text-lg pb-4">-{currentTranscript?.dayOffs * deductions[0]?.dayOffs}</td>
+            <td className="text-lg pb-4">-{currentTranscript?.dayOffs * currentTranscript?.amountPerDayOff}</td>
           </tr>
           <tr className="border-b-[1px] border-gray-700 px-10 pt-9 flex justify-between pb-4"></tr>
           <tr className="border-b-[1px] border-gray-700 px-10 pt-2 flex justify-between">
@@ -106,6 +113,16 @@ const TranscriptPage = ({ }) => {
             <div className="text-lg font-semibold">{currentTranscript?.netSalary}</div>
             <div className="text-lg capitalize">{numberToWords.toWords(currentTranscript?.netSalary)}</div>
         </div>
+      </div>
+
+      <div className="flex justify-center mt-4">
+        <QRCode value={`Name: ${currentTranscript?.employeeName} \nPhone: ${currentTranscript?.phone} \nSalary Earned: ${currentTranscript?.netSalary} \nTotal Deductions: ${currentTranscript?.lateArrivals * deductions[0]?.lateArrivals + currentTranscript?.halfDays * deductions[0]?.halfDays + currentTranscript?.dayOffs * currentTranscript?.amountPerDayOff}`} />
+      </div>
+
+      <div className="flex justify-center flex-col py-2">
+        <p className="text-center">&copy; Right Reserverd by A. Marketing(SMC-PVT)LTD</p>
+        <p className="text-center">info@adotmarketing.co</p>
+        <p className="text-center">1st Floor Asian Business Center main entrance Bahria town phase7 Rawalpindi/Islamabad, Lahore, Pakistan</p>
       </div>
     </div>
   );

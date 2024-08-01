@@ -9,14 +9,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { getLeadByPhone } from "../redux/action/lead";
 import { format } from "timeago.js";
 import ViewAttachments from "./ViewAttachments";
+import { getFollowUps } from "../redux/action/followUp";
+import moment from "moment";
 
 const Table = () => {
   //////////////////////////////////////// VARIABLES ///////////////////////////////////
 
   const dispatch = useDispatch();
   const { leads, isFetching, error } = useSelector((state) => state.lead);
+  const { followUps } = useSelector((state) => state.followUp);
   const { loggedUser } = useSelector((state) => state.user);
-  console.log(leads)
+
   const phoneNumber = loggedUser?.phone;
 
   const columns = [
@@ -37,63 +40,10 @@ const Table = () => {
       width: 190,
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
-        <Tooltip arrow placement="bottom" title={params.row?.allocatedTo[0]?.firstName}>
-          <div className="font-primary font-light capitalize">{params.row?.allocatedTo[0]?.firstName}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      field: "createdAt",
-      headerName: "Created At",
-      width: 170,
-      headerClassName: "super-app-theme--header",
-      renderCell: (params) => (
-        <Tooltip arrow placement="bottom" title={format(params.row?.createdAt)}>
-          <div className="font-primary font-light capitalize">{format(params.row?.createdAt)}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      field: "leads?.degree",
-      headerName: "Degree",
-      width: 160,
-      headerClassName: "super-app-theme--header",
-      renderCell: (params) => (
-        <Tooltip arrow placement="bottom" title={params.row?.degree}>
-          <div className="font-primary font-light capitalize">{params.row?.degree}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      field: "major",
-      headerName: "Major",
-      width: 160,
-      headerClassName: "super-app-theme--header",
-      renderCell: (params) => (
-        <Tooltip arrow placement="bottom" title={params.row?.major}>
-          <div className="font-primary font-light capitalize">{params.row?.major}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      field: "country",
-      headerName: "Country",
-      width: 160,
-      headerClassName: "super-app-theme--header",
-      renderCell: (params) => (
-        <Tooltip arrow placement="bottom" title={params.row?.country}>
-          <div className="font-primary font-light capitalize">{params.row?.country}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      field: "visa",
-      headerName: "Visa",
-      width: 160,
-      headerClassName: "super-app-theme--header",
-      renderCell: (params) => (
-        <Tooltip arrow placement="bottom" title={params.row?.visa}>
-          <div className="font-primary font-light capitalize">{params.row?.visa}</div>
+        <Tooltip arrow placement="bottom" title={`${params.row?.allocatedTo[0]?.firstName} ${params.row?.allocatedTo[0]?.lastName}`}>
+          <div className="font-primary font-light capitalize">
+            {`${params.row?.allocatedTo[0]?.firstName} ${params.row?.allocatedTo[0]?.lastName}`}
+          </div>
         </Tooltip>
       ),
     },
@@ -103,10 +53,73 @@ const Table = () => {
       width: 150,
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
-        <div
-          className={`border-[1px] px-[8px] py-[4px] rounded-full capitalize font-primary font-medium`}>
-          {params.row?.status}
-        </div>
+        <span
+          className={`border-[1px] px-[8px] py-[4px] rounded-full capitalize font-primary font-medium 
+          ${params.row?.status == "closedWon" ? "border-green-500 text-green-500" : ""} 
+          ${params.row?.status == "closedLost" ? "border-red-400 text-red-400" : ""} 
+          ${params.row?.status == "followUp" ? "border-sky-400 text-sky-400" : ""}
+          ${params.row?.status == "contactedClient" ? "border-orange-400 text-orange-400" : ""} 
+          ${params.row?.status == "callNotAttend" ? "border-lime-400 text-lime-500" : ""} 
+          ${params.row?.status == "visitSchedule" ? "border-teal-400 text-teal-500" : ""} 
+          ${params.row?.status == "visitDone" ? "border-indigo-400 text-indigo-500" : ""}
+          ${params.row?.status == "newClient" ? "border-rose-700 text-rose-700" : ""}`}>
+          <span>
+            {params.row?.status == "closedWon" ? <div>Closed Won</div> : <div></div>}
+            {params.row?.status == "closedLost" ? <div>Closed Lost</div> : <div></div>}
+            {params.row?.status == "followUp" ? <div>Follow Up</div> : <div></div>}
+            {params.row?.status == "ContactedClient" ? <div>Contacted Client</div> : <div></div>}
+            {params.row?.status == "callNotAttend" ? <div>Call Not Attend</div> : <div></div>}
+            {params.row?.status == "visitSchedule" ? <div>Visit Schedule</div> : <div></div>}
+            {params.row?.status == "visitDone" ? <div>Visit Done</div> : <div></div>}
+            {params.row?.status == "newClient" ? <div>New Client</div> : <div></div>}
+          </span>
+        </span>
+      ),
+    },
+    {
+      field: "property?.title",
+      headerName: "Project",
+      width: 160,
+      headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <Tooltip arrow placement="bottom" title={params.row?.property?.title}>
+          <div className="font-primary font-light capitalize">{params.row?.property?.title}</div>
+        </Tooltip>
+      ),
+    },
+    {
+      field: "area",
+      headerName: "Area",
+      width: 140,
+      headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <Tooltip arrow placement="bottom" title={`${ params.row?.area ? `${params.row?.area} Marla` : " " }`}>
+          <div className="font-primary font-light capitalize">
+            {`${ params.row?.area ? `${params.row?.area} Marla` : " " }`}
+          </div>
+        </Tooltip>
+      ),
+    },
+    {
+      field: "Next FollowUp Date",
+      headerName: "Next FollowUp Date",
+      width: 300,
+      headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <Tooltip arrow placement="bottom" title={moment(followUps?.slice(-1)[0]?.followUpDate).format("DD-MM-YYYY")}>
+          <div className="font-primary font-light capitalize">{moment(followUps?.slice(-1)[0]?.followUpDate).format("DD-MM-YYYY")}</div>
+        </Tooltip>
+      ),
+    },
+    {
+      field: "createdAt",
+      headerName: "Created At",
+      width: 170,
+      headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <Tooltip arrow placement="bottom" title={moment(params.row?.createdAt).format("DD-MM-YYYY")}>
+          <div className="font-primary font-light capitalize">{moment(params.row?.createdAt).format("DD-MM-YYYY")}</div>
+        </Tooltip>
       ),
     },
     {
@@ -139,9 +152,16 @@ const Table = () => {
 
   //////////////////////////////////////// USEEFFECTS //////////////////////////////////
   useEffect(() => {
-    console.log('phone',phoneNumber)
     dispatch(getLeadByPhone(phoneNumber));
   }, []);
+
+  useEffect(() => {
+    if (leads.length > 0) {
+      leads.map((lead) => {
+        dispatch(getFollowUps(lead._id));
+      });
+    }
+  }, [leads]);
 
   //////////////////////////////////////// FUNCTIONS ///////////////////////////////////
   const handleClick = (newState) => () => {
@@ -211,7 +231,6 @@ const Table = () => {
         setOpen={setOpenAttachments}
         leadId={selectedLeadId}
       />
-
     </div>
   );
 };

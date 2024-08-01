@@ -31,10 +31,12 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
     designation: "",
     phone: "",
     salaryMonth: "",
+    salaryType: "",
     totalSalary: "",
     lateArrivals: "",
     halfDays: "",
     dayOffs: "",
+    amountPerDayOff: deductions[0]?.dayOffs,
     netSalary: "",
   };
 
@@ -52,6 +54,8 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
     "November",
     "December",
   ];
+
+  const salaryTypes = ["Standard", "Commission"];
   ////////////////////////////////////////// STATES /////////////////////////////////////
   const [transcriptData, setTranscriptData] = useState(initialState);
 
@@ -90,8 +94,8 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        fullWidth="sm"
-        maxWidth="sm"
+        fullWidth="md"
+        maxWidth="md"
         aria-describedby="alert-dialog-slide-description">
         <DialogTitle className="flex items-center justify-between">
           <div className="text-sky-400 font-primary">Add New Salary Slip</div>
@@ -164,6 +168,22 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
                 </td>
               </tr>
               <tr>
+                <td className="pb-4 text-lg">Salary Type </td>
+                <td className="pb-4">
+                  <CFormSelect
+                    value={transcriptData.salaryType}
+                    onChange={(e) => handleChange("salaryType", e.target.value)}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
+                    <option value={""}>Select an Option</option>
+                    {salaryTypes.map((employee, key) => (
+                      <option key={key} value={employee}>
+                        {employee}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                </td>
+              </tr>
+              <tr>
                 <td className="pb-4 text-lg">Total Salary </td>
                 <td className="pb-4">
                   <TextField
@@ -213,17 +233,25 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
               </tr>
               <tr>
                 <td className="pb-4 text-lg">Day Offs </td>
-                <td className="pb-4">
+                <td className="pb-4 flex items-center gap-4">
                   <TextField
                     onChange={(e) => handleChange("dayOffs", e.target.value)}
                     value={transcriptData.dayOffs}
+                    placeholder="Number of Day Offs"
                     name="dayOffs"
                     size="small"
                     type="number"
                     fullWidth
-                    InputProps={{
-                      endAdornment: <div style={{ marginRight: 8, opacity: 0.5 }}>X&nbsp;{deductions[0]?.dayOffs}</div>,
-                    }}
+                  />
+                  <div>X</div>
+                  <TextField
+                    onChange={(e) => handleChange("amountPerDayOff", e.target.value)}
+                    value={transcriptData.amountPerDayOff}
+                    placeholder="Amount Per Day Off"
+                    name="amountPerDayOff"
+                    size="small"
+                    type="number"
+                    fullWidth
                   />
                 </td>
               </tr>
@@ -237,7 +265,7 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
                         transcriptData.totalSalary -
                         transcriptData.lateArrivals * deductions[0]?.lateArrivals -
                         transcriptData.halfDays * deductions[0]?.halfDays -
-                        transcriptData.dayOffs * deductions[0]?.dayOffs)
+                        transcriptData.dayOffs * transcriptData.amountPerDayOff)
                     }
                     name="netSalary"
                     size="small"

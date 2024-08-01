@@ -10,9 +10,7 @@ const VoucherPage = ({ }) => {
 
   ////////////////////////////////////// VARIABLES ///////////////////////////////////
   const { state } = useLocation()
-  console.log('state', state)
   const voucher = state?.voucher
-  console.log('voucher', voucher)
   const navigate = useNavigate()
   const pdfRef = useRef()
 
@@ -49,7 +47,7 @@ const VoucherPage = ({ }) => {
 
         <div className="flex justify-between items w-full relative py-[1rem] ">
         <div className="flex justify-start">
-          <img src="/background/A-consultant-logo.png" className="h-20 mb-5" />
+          <img src="/images/adotmarketinglogo.png" className="h-28 mb-5" />
         </div>
           <div className=" ">
             <table className="border-[1px] border-black w-full " >
@@ -91,12 +89,12 @@ const VoucherPage = ({ }) => {
           <table className="text-center border-[1px] border-black w-full ">
             <tr className='w-full' >
               <th className="text-center border-y-[1px] border-x-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Type of Payment</th>
-              <th className="text-center border-y-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Country</th>
+              <th className="text-center border-y-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Amount</th>
               <th className="text-center border-y-[1px] border-x-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Payment Date</th>
             </tr>
             <tr className='w-full' >
-              <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] capitalize pb-4">{voucher?.type}</td>
-              <td className="text-center border-b-[1px]  border-black h-[2rem] w-[13rem] pb-4">{voucher?.country}</td>
+              <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] capitalize pb-4">{voucher?.type} ({voucher?.cheque})</td>
+              <td className="text-center border-b-[1px]  border-black h-[2rem] w-[13rem] pb-4">{voucher?.total}</td>
               <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] pb-4">{voucher?.dueDate}</td>
             </tr>
           </table>
@@ -106,14 +104,14 @@ const VoucherPage = ({ }) => {
         <div className="w-full pt-4 flex justify-center">
           <table className="text-center border-[1px] border-black w-full ">
             <tr className='w-full' >
-              <th className="text-center border-y-[1px] border-x-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Degree</th>
-              <th className="text-center border-y-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Major</th>
-              <th className="text-center border-y-[1px] border-x-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Visa</th>
+              <th className="text-center border-y-[1px] border-x-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Project</th>
+              <th className="text-center border-y-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Property Type</th>
+              <th className="text-center border-y-[1px] border-x-[1px] border-black bg-[#dddddd] h-[2rem] w-[13rem] pb-4">Area</th>
             </tr>
             <tr className='w-full' >
-              <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] capitalize pb-4">{voucher?.degree == 'other' ? <div>{voucher?.degreeName}</div> : <div>{voucher.degree}</div>}</td>
-              <td className="text-center border-b-[1px] border-black h-[2rem] w-[13rem] capitalize pb-4">{voucher?.major}</td>
-              <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] pb-4">{voucher?.visa == 'studentVisa' ? <div>Student Visa</div> : voucher?.visa == "visitVisa" ? <div>Visit Visa</div> : voucher?.visa == 'workVisa' ? <div>Work Visa</div> : voucher?.visa}</td>
+              <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] capitalize pb-4">{voucher?.project?.title}</td>
+              <td className="text-center border-b-[1px] border-black h-[2rem] w-[13rem] capitalize pb-4">{voucher?.propertyType}</td>
+              <td className="text-center border-b-[1px] border-x-[1px] border-black h-[2rem] w-[13rem] pb-4">{voucher?.area}</td>
             </tr>
           </table>
         </div>
@@ -135,12 +133,13 @@ const VoucherPage = ({ }) => {
         </div>
 
         <div className="flex justify-center pt-10">
-          <QRCode value={`Name: ${voucher.clientName}\nPhone: ${voucher.phone}\nCNIC: ${voucher.CNIC}\nAmount Paid: ${voucher.paid}\nPurpose: This person has applied for the degree of ${voucher.degree == 'other' ? voucher.degreeName : voucher.degree} with major as ${voucher.major} on ${voucher.visa} in ${voucher.country}.`} size={128} />
+          <QRCode value={`Name: ${voucher?.clientName}\nPhone: ${voucher?.phone}\nCNIC: ${voucher?.CNIC}\nAmount Paid: ${voucher?.paid}\nPurpose: This person has applied in the ${voucher?.project?.title} project.`} size={128} />
         </div>
         
         <div className="flex justify-center flex-col py-2">
-          <p className="text-center">&copy; Right Reserverd by A. Consultant</p>
-          <p className="text-center">2nd Floor, Plaza 6-A, Vilas Road, Main Boulevard, Park View City, Lahore</p>
+          <p className="text-center">&copy; Right Reserverd by A. Marketing(SMC-PVT)LTD</p>
+          <p className="text-center">info@adotmarketing.co</p>
+          <p className="text-center">1st Floor Asian Business Center main entrance Bahria town phase7 Rawalpindi/Islamabad, Lahore, Pakistan</p>
         </div>
       </div>
 

@@ -23,6 +23,16 @@ export const getInventories = () => async (dispatch) => {
         dispatch(error(err.message))
     }
 }
+export const getEmployeeInventories = () => async (dispatch) => {
+    try {
+        dispatch(start())
+        const { data } = await api.getEmployeeInventories()
+        dispatch(getInventoriesReducer(data.result))
+        dispatch(end())
+    } catch (err) {
+        dispatch(error(err.message))
+    }
+}
 export const getUsers = () => async (dispatch) => {
     try {
         dispatch(start())
@@ -58,7 +68,7 @@ export const createInventory = (inventoryData, navigate) => async (dispatch) => 
         dispatch(start())
         const { data } = await api.createInventory(inventoryData)
         dispatch(createInventoryReducer(data.result))
-        navigate('/inventory')
+        navigate('/inventories')
         dispatch(end())
     } catch (err) {
         dispatch(error(err.message))

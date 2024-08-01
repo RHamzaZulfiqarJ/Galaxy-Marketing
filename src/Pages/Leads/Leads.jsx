@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Topbar from "./Topbar";
 import { useDispatch, useSelector } from "react-redux";
-import { getEmployeeLeads, getLead, getLeads } from "../../redux/action/lead";
+import { getEmployeeLeads, getLead, getLeads, updateLead } from "../../redux/action/lead";
 import EditModal from "./EditModal";
 import DeleteModal from "./DeleteModal";
 import { Tooltip } from "@mui/material";
@@ -106,6 +106,7 @@ function Leads({ type, showSidebar }) {
   const unarchivedLeads = leads.filter((lead) => !lead.isArchived);
   const { loggedUser } = useSelector((state) => state.user);
   const role = loggedUser.role;
+  
   const columns = [
     {
       field: "uid",
@@ -133,7 +134,9 @@ function Leads({ type, showSidebar }) {
       headerClassName: "super-app-theme--header",
       width: 150,
       renderCell: (params) => (
-        <div className={`font-primary font-light`}>{params.row?.client?.phone || params.row?.clientPhone }</div>
+        <div className={`font-primary font-light`}>
+          {params.row?.client?.phone || params.row?.clientPhone}
+        </div>
       ),
     },
     {
@@ -142,7 +145,9 @@ function Leads({ type, showSidebar }) {
       width: 110,
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
-        <div className="font-primary font-light">{moment(params.row?.createdAt).format("DD-MM-YYYY")}</div>
+        <div className="font-primary font-light">
+          {moment(params.row?.createdAt).format("DD-MM-YYYY")}
+        </div>
       ),
     },
     {
@@ -164,35 +169,67 @@ function Leads({ type, showSidebar }) {
           className={`border-[1px] px-[8px] py-[4px] rounded-full capitalize font-primary font-medium 
           ${params.row?.status == "closedWon" ? "border-green-500 text-green-500" : ""} 
           ${params.row?.status == "closedLost" ? "border-red-400 text-red-400" : ""} 
-          ${params.row?.status == "followedUpCall" ? "border-sky-400 text-sky-400" : ""}
-          ${params.row?.status == "contactedCallAttempt" ? "border-orange-400 text-orange-400" : ""} 
-          ${params.row?.status == "contactedCall" ? "border-yellow-500 text-yellow-500" : ""}
-          ${params.row?.status == "followedUpEmail" ? "border-lime-400 text-lime-500" : ""} 
-          ${params.row?.status == "contactedEmail" ? "border-teal-400 text-teal-500" : ""} 
-          ${params.row?.status == "meetingDone" ? "border-indigo-400 text-indigo-500" : ""}
-          ${params.row?.status == "meetingAttempt" ? "border-pink-400 text-pink-500" : ""}
-          ${params.row?.status == "new" ? "border-rose-700 text-rose-700" : ""}`}>
+          ${params.row?.status == "followUp" ? "border-sky-400 text-sky-400" : ""}
+          ${
+            params.row?.status == "contactedClient" ? "border-orange-400 text-orange-400" : ""
+          } 
+          ${params.row?.status == "callNotAttend" ? "border-lime-400 text-lime-500" : ""} 
+          ${params.row?.status == "visitSchedule" ? "border-teal-400 text-teal-500" : ""} 
+          ${params.row?.status == "visitDone" ? "border-indigo-400 text-indigo-500" : ""}
+          ${params.row?.status == "newClient" ? "border-rose-700 text-rose-700" : ""}`}>
+
           <span>
             {params.row?.status == "closedWon" ? <div>Closed Won</div> : <div></div>}
             {params.row?.status == "closedLost" ? <div>Closed Lost</div> : <div></div>}
-            {params.row?.status == "followedUpCall" ? <div>Followed Up Call</div> : <div></div>}
-            {params.row?.status == "contactedCallAttempt" ? <div>Contacted Call Attempt</div> : <div></div>}
-            {params.row?.status == "contactedCall" ? <div>Contacted Call</div> : <div></div>}
-            {params.row?.status == "followedUpEmail" ? <div>Followed Up Email</div> : <div></div>}
-            {params.row?.status == "contactedEmail" ? <div>Contacted Email</div> : <div></div>}
-            {params.row?.status == "meetingDone" ? <div>Meeting Done</div> : <div></div>}
-            {params.row?.status == "meetingAttempt" ? <div>Meeting Attempt</div> : <div></div>}
-            {params.row?.status == "new" ? <div>New</div> : <div></div>}
+            {params.row?.status == "followUp" ? <div>Follow Up</div> : <div></div>}
+            {params.row?.status == "ContactedClient" ? (
+              <div>Contacted Client</div>
+            ) : (
+              <div></div>
+            )}
+            {params.row?.status == "callNotAttend" ? <div>Call Not Attend</div> : <div></div>}
+            {params.row?.status == "visitSchedule" ? <div>Visit Schedule</div> : <div></div>}
+            {params.row?.status == "visitDone" ? <div>Visit Done</div> : <div></div>}
+            {params.row?.status == "newClient" ? <div>New Client</div> : <div></div>}
           </span>
         </span>
       ),
     },
     {
       field: "property",
-      headerName: "Property",
+      headerName: "Project",
       width: 150,
       headerClassName: "super-app-theme--header",
-      renderCell: (params) => <div className="font-primary font-light capitalize">{params.row?.project}</div>,
+      renderCell: (params) => (
+        <div className="font-primary font-light capitalize">
+          {params.row?.project?.title || params.row?.property?.title}
+        </div>
+      ),
+    },
+    {
+      field: "allocatedTo",
+      headerClassName: "super-app-theme--header",
+      headerName: "Staff",
+      width: 100,
+      renderCell: (params) => (
+        <div className="capitalize font-primary font-light">
+          {params.row?.allocatedTo?.length > 1
+            ? params.row?.allocatedTo?.map((item, key) => (
+                <Tooltip
+                  className="capitalize flex gap-2"
+                  key={key}
+                  title={`• ${item?.firstName}`}
+                  arrow>
+                  • {item?.firstName}
+                </Tooltip>
+              ))
+            : params.row?.allocatedTo?.map((item, key) => (
+                <Tooltip className="capitalize flex gap-2" key={key} title={item?.firstName} arrow>
+                  {item?.firstName}
+                </Tooltip>
+              ))}
+        </div>
+      ),
     },
     {
       field: "actions",
@@ -231,6 +268,21 @@ function Leads({ type, showSidebar }) {
             </Tooltip>
 
             <Menu slots={{ listbox: StyledListbox }}>
+              {
+                params.row.isArchived ? (
+                  <StyledMenuItem
+                    onClick={() => handleUnArchive(params.row)}
+                    className="text-gray-600 flex font-primary">
+                    Unarchive
+                  </StyledMenuItem>
+                ) : (
+                  <StyledMenuItem
+                    onClick={() => handleArchive(params.row)}
+                    className="text-gray-600 flex font-primary">
+                    Archive
+                  </StyledMenuItem>
+                )
+              }
               <StyledMenuItem
                 className="text-gray-600 flex font-primary"
                 onClick={() => handleOpenStatusModal(params.row)}>
@@ -269,6 +321,7 @@ function Leads({ type, showSidebar }) {
   }
 
   ////////////////////////////////////// STATES //////////////////////////////
+  const [search, setSearch] = useState("");
   const [openAttachmentModal, setOpenAttachmentModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openViewModal, setOpenViewModal] = useState(false);
@@ -286,11 +339,7 @@ function Leads({ type, showSidebar }) {
   });
   ////////////////////////////////////// USE EFFECTS //////////////////////////////
   useEffect(() => {
-    loggedUser.role == 'employee'
-      ?
-      dispatch(getEmployeeLeads())
-      :
-      dispatch(getLeads());
+    loggedUser.role == "employee" ? dispatch(getEmployeeLeads()) : dispatch(getLeads());
   }, []);
 
   useEffect(() => {
@@ -299,8 +348,13 @@ function Leads({ type, showSidebar }) {
     }
   }, [isFiltered]);
 
-
   ////////////////////////////////////// FUNCTION //////////////////////////////
+  const handleArchive = (lead) => {
+    dispatch(updateLead(lead._id, { isArchived: true }, { loading: false }));
+  };
+  const handleUnArchive = (lead) => {
+    dispatch(updateLead(lead._id, { isArchived: false }, { loading: false }));
+  };
   const handleOpenAttachmentModal = (leadId) => {
     setSelectedLeadId(leadId);
     setOpenAttachmentModal(true);
@@ -358,6 +412,8 @@ function Leads({ type, showSidebar }) {
         setOpenFilters={setOpenFilters}
         setIsFiltered={setIsFiltered}
         isFiltered={isFiltered}
+        search={search}
+        setSearch={setSearch}
       />
       {options.isKanbanView ? (
         <Kanban options={options} setOptions={setOptions} />

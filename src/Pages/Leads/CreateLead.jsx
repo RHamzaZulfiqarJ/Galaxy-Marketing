@@ -19,10 +19,11 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { getProjects } from "../../redux/action/project";
-import { getProjectsReducer } from "../../redux/reducer/project";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -33,18 +34,23 @@ const CreateLead = ({ setOpen, open, scroll }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isFetching } = useSelector((state) => state.lead);
-  const { allProjects } = useSelector((state) => state.project);
-  console.log(allProjects)
+  const { projects } = useSelector((state) => state.project);
   let initialLeadState = {
     clientName: "",
     clientPhone: "",
-    priority: "",
-    project: "",
     city: "",
+    description: "",
+    property: "",
+    area: "",
+    priority: "",
     status: "",
     source: "",
-    description: "",
   };
+  const initialFollowUpState = {
+    followUpStatus: "",
+    remarks: "",
+    followUpDate: "",
+  }
   const priorities = [
     { name: "Very Cold", value: "veryCold" },
     { name: "Cold", value: "cold" },
@@ -53,16 +59,14 @@ const CreateLead = ({ setOpen, open, scroll }) => {
     { name: "Very Hot", value: "veryHot" },
   ];
   const statuses = [
-    { name: "Closed (Lost)", value: "closedLost" },
-    { name: "Followed Up (Call)", value: "followedUpCall" },
-    { name: "Contacted Client (Call Attempt)", value: "contactedCallAttempt" },
-    { name: "Contacted Client (Call)", value: "contactedCall" },
-    { name: "Followed Up (Email)", value: "followedUpEmail" },
-    { name: "Contacted Client (Email)", value: "contactedEmail" },
-    { name: "New", value: "new" },
-    { name: "Meeting (Done)", value: "meetingDone" },
+    { name: "New Client", value: "newClient" },
+    { name: "Follow Up", value: "followUp" },
+    { name: "Contacted Client", value: "contactedClient" },
+    { name: "Call Not Attend", value: "callNotAttend" },
+    { name: "Visit Schedule", value: "visitSchedule" },
+    { name: "Visit Done", value: "visitDone" },
     { name: "Closed (Won)", value: "closedWon" },
-    { name: "Meeting (Attempt)", value: "meetingAttempt" },
+    { name: "Closed (Lost)", value: "closedLost" },
   ];
   const sources = [
     { name: "Instagram", value: "instagram" },
@@ -73,10 +77,12 @@ const CreateLead = ({ setOpen, open, scroll }) => {
     { name: "Google", value: "google" },
     { name: "Referral", value: "referral" },
   ];
+ 
 
   //////////////////////////////////////// STATES ////////////////////////////////////
   const [leadData, setLeadData] = useState(initialLeadState);
   const [createMultiple, setCreateMultiple] = useState(false);
+  const [followUpData, setFollowUpData] = useState(initialFollowUpState);
   const [leadCountsToCreate, setLeadCountsToCreate] = useState(1);
 
   //////////////////////////////////////// USE EFFECTS ////////////////////////////////
@@ -90,18 +96,19 @@ const CreateLead = ({ setOpen, open, scroll }) => {
     const {
       clientName,
       clientPhone,
-      country,
-      priority,
       city,
-      project,
+      priority,
+      area,
+      status,
       source,
+      property,
       description,
     } = leadData;
 
-    dispatch(
-      createLead({ ...leadData, count: leadCountsToCreate < 1 ? 1 : leadCountsToCreate }, navigate)
-    );
+    dispatch(createLead({ ...leadData, count: leadCountsToCreate < 1 ? 1 : leadCountsToCreate, ...followUpData }, navigate));
+
     setLeadData(initialLeadState);
+    setFollowUpData(initialFollowUpState);
     setCreateMultiple(false);
     setLeadCountsToCreate(1);
     setOpen(false);
@@ -142,7 +149,7 @@ const CreateLead = ({ setOpen, open, scroll }) => {
             <Divider />
             <table className="mt-4">
               <tr>
-                <td className="pb-4 text-lg">Client Name </td>
+                <td className="pb-4 text-lg">Client Name <span className="text-red-400">*</span> </td>
                 <td className="pb-4">
                   <TextField
                     name="clientName"
@@ -155,7 +162,7 @@ const CreateLead = ({ setOpen, open, scroll }) => {
                 </td>
               </tr>
               <tr>
-                <td className="pb-4 text-lg">Phone </td>
+                <td className="pb-4 text-lg">Phone <span className="text-red-400">*</span> </td>
                 <td className="pb-4">
                   <TextField
                     name="clientPhone"
@@ -178,24 +185,6 @@ const CreateLead = ({ setOpen, open, scroll }) => {
             <Divider />
             <table className="mt-4">
               <tr>
-                <td className="pb-4 text-lg">Project </td>
-                <td className="pb-4">
-                  <CFormSelect
-                    value={leadData.project}
-                    onChange={(e) => handleChange("project", e.target.value)}
-                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
-                    <option value="">Select an Option</option>
-                    {
-                      allProjects?.map((item, key) => (
-                        <option key={key} value={item._id}>
-                          {item.title}
-                        </option>
-                      ))
-                    }
-                  </CFormSelect>
-                </td>
-              </tr>
-              <tr>
                 <td className="pb-4 text-lg">City </td>
                 <td className="pb-4">
                   <CFormSelect
@@ -203,14 +192,42 @@ const CreateLead = ({ setOpen, open, scroll }) => {
                     onChange={(e) => handleChange("city", e.target.value)}
                     className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
                     <option value="">Select an Option</option>
-                    {
-                      pakistanCities?.map((item, key) => (
-                        <option key={key} value={item}>
-                          {item}
-                        </option>
-                      ))
-                    }
+
+                    {pakistanCities.map((city, key) => (
+                      <option key={key} value={city}>
+                        {city}
+                      </option>
+                    ))}
                   </CFormSelect>
+                </td>
+              </tr>
+              <tr>
+                <td className="pb-4 text-lg">Project <span className="text-red-400">*</span> </td>
+                <td className="pb-4">
+                  <CFormSelect
+                    value={leadData.property}
+                    onChange={(e) => handleChange("property", e.target.value)}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
+                    <option value="">Select an Option</option>
+                    {projects.map((project, key) => (
+                      <option key={project?._id} value={project?._id}>
+                        {project?.title}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                </td>
+              </tr>
+              <tr>
+                <td className="pb-4 text-lg">Area in Marla </td>
+                <td className="pb-4">
+                  <TextField
+                    name="area"
+                    onChange={(e) => handleChange("area", e.target.value)}
+                    value={leadData.area}
+                    type="number"
+                    size="small"
+                    fullWidth
+                  />
                 </td>
               </tr>
               <tr>
@@ -305,6 +322,27 @@ const CreateLead = ({ setOpen, open, scroll }) => {
                   </td>
                 </tr>
               )}
+            </table>
+            <Divider />
+            <div className="text-xl flex justify-start items-center gap-2 pt-8 font-normal">
+              <PiNotepad />
+              <span>Follow Up Details</span>
+            </div>
+            <Divider />
+            <table className="mt-4">
+              <tr>
+                <td className="flex flex-col justify-start mt-1 text-lg">Next Follow Up Date </td>
+                <td className="pb-4">
+                  <TextField
+                    onChange={(e) => setFollowUpData({ ...followUpData, followUpDate: e.target.value })}
+                    value={followUpData.followUpDate}
+                    name="followUpDate"
+                    type="date"
+                    size="small"
+                    fullWidth
+                  />
+                </td>
+              </tr>
             </table>
           </div>
         </DialogContent>
