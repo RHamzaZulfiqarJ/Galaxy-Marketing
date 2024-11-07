@@ -129,7 +129,7 @@ const ClientNavbar = () => {
         className={`sm:h-full h-[4rem] md:pl-[20px] sm:pl-[1rem] pl-[8px] flex items-center justify-between sm:border-none border-b-[1px] border-[#eeeff0] sm:shadow-none`}>
         {/* Left section */}
         <div>
-          <img className="h-20" src="/images/adotmarketinglogo.png" />
+          <img className="h-16" src="/images/Logo.png" />
         </div>
 
         {/* Center section */}

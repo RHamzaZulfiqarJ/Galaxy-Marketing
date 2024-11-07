@@ -81,7 +81,7 @@ const Login = () => {
         <img src="/images/login-1.png" alt="Login Illustration" />
       </div>
       <div className="w-full h-screen flex flex-col items-center justify-center">
-      <img className="h-24 mb-4" src="/images/adotmarketinglogo.png" alt="Adot Marketing Logo" />
+      <img className="h-24 mb-4" src="/images/Logo.png" alt="Adot Marketing Logo" />
         <div className="flex flex-col items-center w-96 shadow-xl rounded bg-white p-12 pb-0">
           <p className="text-xl text-slate-500 tracking-wide mb-4">Sign in to your account</p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">

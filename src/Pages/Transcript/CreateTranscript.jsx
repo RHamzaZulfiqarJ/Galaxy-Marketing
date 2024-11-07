@@ -32,12 +32,12 @@ const CreateTranscript = ({ open, setOpen, scroll }) => {
     phone: "",
     salaryMonth: "",
     salaryType: "",
-    totalSalary: "",
-    lateArrivals: "",
-    halfDays: "",
-    dayOffs: "",
+    totalSalary: 0,
+    lateArrivals: 0,
+    halfDays: 0,
+    dayOffs: 0,
     amountPerDayOff: deductions[0]?.dayOffs,
-    netSalary: "",
+    netSalary: 0,
   };
 
   const months = [

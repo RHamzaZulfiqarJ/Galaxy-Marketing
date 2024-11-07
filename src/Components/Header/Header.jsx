@@ -308,7 +308,7 @@ const Header = () => {
       {/* Sidebar */}
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <img src="/images/adotmarketinglogo.png" />
+          <img className="h-40" src="/images/Logo.png" />
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? <ChevronRight /> : <ChevronLeft />}
           </IconButton>

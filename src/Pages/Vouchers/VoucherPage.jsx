@@ -47,7 +47,7 @@ const VoucherPage = ({ }) => {
 
         <div className="flex justify-between items w-full relative py-[1rem] ">
         <div className="flex justify-start">
-          <img src="/images/adotmarketinglogo.png" className="h-28 mb-5" />
+          <img src="/images/Logo.png" className="h-32 mb-5" />
         </div>
           <div className=" ">
             <table className="border-[1px] border-black w-full " >
@@ -137,9 +137,9 @@ const VoucherPage = ({ }) => {
         </div>
         
         <div className="flex justify-center flex-col py-2">
-          <p className="text-center">&copy; Right Reserverd by A. Marketing(SMC-PVT)LTD</p>
-          <p className="text-center">info@adotmarketing.co</p>
-          <p className="text-center">1st Floor Asian Business Center main entrance Bahria town phase7 Rawalpindi/Islamabad, Lahore, Pakistan</p>
+          <p className="text-center">&copy; Right Reserverd by Galaxy Marketing</p>
+          <p className="text-center">03095550790</p>
+          <p className="text-center">Office # 8, 1st Floor, Al - Anayat Mall G-11 Markaz, Islamabad, Pakistan</p>
         </div>
       </div>
 
