@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import moment from "moment";
+import { Tooltip } from "@mui/material";
 
 const FollowUps = () => {
   /////////////////////////////////////////// VARIABLES ////////////////////////////////////////////
@@ -20,7 +21,7 @@ const FollowUps = () => {
       headerName: "ID",
       headerClassName: "super-app-theme--header",
       width: 100,
-      renderCell: (params) => <div className="font-primary font-light">{params.row.uid}</div>,
+      renderCell: (params) => <div className="font-primary font-light">{params.row?.uid}</div>,
     },
     {
       field: "status",
@@ -30,14 +31,14 @@ const FollowUps = () => {
       renderCell: (params) => (
         <span
           className={`border-[1px] px-[8px] py-[4px] rounded-full capitalize font-primary font-medium 
-      ${params.row?.status == "closedWon" ? "border-green-500 text-green-500" : ""} 
-      ${params.row?.status == "closedLost" ? "border-red-400 text-red-400" : ""} 
-      ${params.row?.status == "followUp" ? "border-sky-400 text-sky-400" : ""}
-      ${params.row?.status == "contactedClient" ? "border-orange-400 text-orange-400" : ""} 
-      ${params.row?.status == "callNotAttend" ? "border-lime-400 text-lime-500" : ""} 
-      ${params.row?.status == "visitSchedule" ? "border-teal-400 text-teal-500" : ""} 
-      ${params.row?.status == "visitDone" ? "border-indigo-400 text-indigo-500" : ""}
-      ${params.row?.status == "newClient" ? "border-rose-700 text-rose-700" : ""}`}>
+            ${params.row?.status == "closedWon" ? "border-green-500 text-green-500" : ""} 
+            ${params.row?.status == "closedLost" ? "border-red-400 text-red-400" : ""} 
+            ${params.row?.status == "followUp" ? "border-sky-400 text-sky-400" : ""}
+            ${params.row?.status == "contactedClient" ? "border-orange-400 text-orange-400" : ""} 
+            ${params.row?.status == "callNotAttend" ? "border-lime-400 text-lime-500" : ""} 
+            ${params.row?.status == "visitSchedule" ? "border-teal-400 text-teal-500" : ""} 
+            ${params.row?.status == "visitDone" ? "border-indigo-400 text-indigo-500" : ""}
+            ${params.row?.status == "newClient" ? "border-rose-700 text-rose-700" : ""}`}>
           <span>
             {params.row?.status == "closedWon" ? <div>Closed Won</div> : <div></div>}
             {params.row?.status == "closedLost" ? <div>Closed Lost</div> : <div></div>}
@@ -67,7 +68,9 @@ const FollowUps = () => {
       headerName: "Remarks",
       headerClassName: "super-app-theme--header",
       width: 400,
-      renderCell: (params) => <div className="font-primary font-light">{params.row.remarks}</div>,
+      renderCell: (params) => <Tooltip arrow title={params.row?.remarks}>
+        <div className="font-primary font-light">{params.row?.remarks}</div>
+      </Tooltip>,
     },
     {
       field: "createdat",

@@ -67,6 +67,9 @@ const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
                 pagination: {
                   paginationModel: { pageSize: rowsPerPage },
                 },
+                sorting: {
+                  sortModel: [{ field: "createdAt", sort: "desc" }],
+                },
               }}
               getRowId={(row) => row._id}
               pageSizeOptions={[5, 10]}

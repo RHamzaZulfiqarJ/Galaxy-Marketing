@@ -139,6 +139,7 @@ export const getLeadsStat = (type) => API.get(`/lead/get/stats?type=${type}`)
 export const searchLead = (searchTerm) => API.get(`/lead/search?searchTerm=${searchTerm}`)
 export const filterLead = (filters) => API.get(`/lead/filter?${objectToQueryString(filters)}`)
 export const createLead = (leadData) => API.post(`/lead/create`, leadData)
+export const uploadLeads = (leads) => API.post(`/lead/upload`, { leads });
 export const updateLead = (leadId, leadData) => API.put(`/lead/update/${leadId}`, leadData)
 export const shiftLead = (leadId, shiftTo) => API.put(`/lead/update/shift/${leadId}`, { shiftTo })
 export const shareLead = (leadId, shareWith) => API.put(`/lead/update/share/${leadId}`, { shareWith })

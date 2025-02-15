@@ -122,7 +122,9 @@ function Leads({ type, showSidebar }) {
         <div
           className={`text-[#20aee3] hover:text-[#007bff] capitalize cursor-pointer font-primary font-light`}
           onClick={() => handleOpenViewModal(params.row?._id)}>
-          {params.row?.clientName}
+          <Tooltip title={params.row?.clientName} arrow>
+            {params.row?.clientName}
+          </Tooltip>
         </div>
       ),
     },
@@ -165,23 +167,49 @@ function Leads({ type, showSidebar }) {
       renderCell: (params) => (
         <span
           className={`border-[1px] px-[8px] py-[4px] rounded-full capitalize font-primary font-medium 
-          ${params.row?.status == "closedWon" ? "border-green-500 text-green-500" : ""} 
-          ${params.row?.status == "closedLost" ? "border-red-400 text-red-400" : ""} 
-          ${params.row?.status == "followUp" ? "border-sky-400 text-sky-400" : ""}
-          ${params.row?.status == "contactedClient" ? "border-orange-400 text-orange-400" : ""} 
-          ${params.row?.status == "callNotAttend" ? "border-lime-400 text-lime-500" : ""} 
-          ${params.row?.status == "visitSchedule" ? "border-teal-400 text-teal-500" : ""} 
-          ${params.row?.status == "visitDone" ? "border-indigo-400 text-indigo-500" : ""}
-          ${params.row?.status == "newClient" ? "border-rose-700 text-rose-700" : ""}`}>
+          ${
+            params.row?.status == "closedWon"
+              ? "border-green-500 text-green-500"
+              : params.row?.status == "closedLost"
+              ? "border-red-400 text-red-400"
+              : params.row?.status == "followUp"
+              ? "border-sky-400 text-sky-400"
+              : params.row?.status == "contactedClient"
+              ? "border-orange-400 text-orange-400"
+              : params.row?.status == "callNotAttend"
+              ? "border-lime-400 text-lime-500"
+              : params.row?.status == "visitSchedule"
+              ? "border-teal-400 text-teal-500"
+              : params.row?.status == "visitDone"
+              ? "border-indigo-400 text-indigo-500"
+              : params.row?.status == "newClient"
+              ? "border-rose-700 text-rose-700"
+              : params.row?.status == "contactedCallAttempt"
+              ? "border-info text-info"
+              : "border-gray-500 text-gray-500"
+          }`}>
           <span>
-            {params.row?.status == "closedWon" ? <div>Closed Won</div> : <div></div>}
-            {params.row?.status == "closedLost" ? <div>Closed Lost</div> : <div></div>}
-            {params.row?.status == "followUp" ? <div>Follow Up</div> : <div></div>}
-            {params.row?.status == "contactedClient" ? <div>Contacted Client</div> : <div></div>}
-            {params.row?.status == "callNotAttend" ? <div>Call Not Attend</div> : <div></div>}
-            {params.row?.status == "visitSchedule" ? <div>Visit Schedule</div> : <div></div>}
-            {params.row?.status == "visitDone" ? <div>Visit Done</div> : <div></div>}
-            {params.row?.status == "newClient" ? <div>New Client</div> : <div></div>}
+            {params.row?.status == "closedWon" ? (
+              <div>Closed Won</div>
+            ) : params.row?.status == "closedLost" ? (
+              <div>Closed Lost</div>
+            ) : params.row?.status == "followUp" ? (
+              <div>Follow Up</div>
+            ) : params.row?.status == "contactedClient" ? (
+              <div>Contacted Client</div>
+            ) : params.row?.status == "contactedCallAttempt" ? (
+              <div>Contacted Call Attempt</div>
+            ) : params.row?.status == "callNotAttend" ? (
+              <div>Call Not Attend</div>
+            ) : params.row?.status == "visitSchedule" ? (
+              <div>Visit Schedule</div>
+            ) : params.row?.status == "visitDone" ? (
+              <div>Visit Done</div>
+            ) : params.row?.status == "newClient" ? (
+              <div>New Client</div>
+            ) : (
+              <div>{params.row?.status}</div>
+            )}
           </span>
         </span>
       ),
@@ -192,9 +220,11 @@ function Leads({ type, showSidebar }) {
       width: 150,
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
-        <div className="font-primary font-light capitalize">
-          {params.row?.project?.title || params.row?.property?.title}
-        </div>
+        <Tooltip title={params.row?.project?.title || params.row?.property?.title} arrow>
+          <div className="font-primary font-light capitalize">
+            {params.row?.project?.title || params.row?.property?.title}
+          </div>
+        </Tooltip>
       ),
     },
     {
@@ -206,19 +236,19 @@ function Leads({ type, showSidebar }) {
         <div className="capitalize font-primary font-light">
           {params.row?.allocatedTo?.length > 1
             ? params.row?.allocatedTo?.map((item, key) => (
-              <Tooltip
-                className="capitalize flex gap-2"
-                key={key}
-                title={`• ${item?.firstName}`}
-                arrow>
-                • {item?.firstName}
-              </Tooltip>
-            ))
+                <Tooltip
+                  className="capitalize flex gap-2"
+                  key={key}
+                  title={`• ${item?.firstName}`}
+                  arrow>
+                  • {item?.firstName}
+                </Tooltip>
+              ))
             : params.row?.allocatedTo?.map((item, key) => (
-              <Tooltip className="capitalize flex gap-2" key={key} title={item?.firstName} arrow>
-                {item?.firstName}
-              </Tooltip>
-            ))}
+                <Tooltip className="capitalize flex gap-2" key={key} title={item?.firstName} arrow>
+                  {item?.firstName}
+                </Tooltip>
+              ))}
         </div>
       ),
     },
@@ -239,7 +269,9 @@ function Leads({ type, showSidebar }) {
             </Tooltip>
           )}
           <Tooltip placement="top" title="View">
-            <div className="cursor-pointer" onClick={() => handleOpenViewModal(params.row?._id)}>
+            <div
+              className="cursor-pointer"
+              onClick={(e) => handleOpenViewModal(params.row?._id, e)}>
               <IoOpenOutline className="cursor-pointer text-orange-500 text-[23px] hover:text-orange-400" />
             </div>
           </Tooltip>
@@ -340,29 +372,32 @@ function Leads({ type, showSidebar }) {
   useEffect(() => {
     let updatedLeads = leads;
     if (search) {
-      updatedLeads = leads.filter(lead =>
-        lead.clientName.toLowerCase().includes(search.toLowerCase()) ||
-        lead.clientPhone.toLowerCase().includes(search.toLowerCase()) ||
-        lead.uid.toLowerCase().includes(search.toLowerCase())
+      updatedLeads = leads.filter(
+        (lead) =>
+          lead.clientName.toLowerCase().includes(search.toLowerCase()) ||
+          lead.clientPhone.toLowerCase().includes(search.toLowerCase()) ||
+          lead.uid.toLowerCase().includes(search.toLowerCase())
       );
     }
     if (options.showArchivedLeads) {
-      updatedLeads = updatedLeads.filter(lead => lead.isArchived);
+      updatedLeads = updatedLeads.filter((lead) => lead.isArchived);
     } else {
-      updatedLeads = updatedLeads.filter(lead => !lead.isArchived);
+      updatedLeads = updatedLeads.filter((lead) => !lead.isArchived);
     }
     setFilteredLeads(updatedLeads);
   }, [search, leads, options.showArchivedLeads]);
 
   ////////////////////////////////////// FUNCTION //////////////////////////////
   const handleArchive = (lead) => {
-    dispatch(updateLead(lead._id, { isArchived: true }, { loading: false }))
-      .then(() => dispatch(getLeads()));
+    dispatch(updateLead(lead._id, { isArchived: true }, { loading: false })).then(() =>
+      dispatch(getLeads())
+    );
   };
-  
+
   const handleUnArchive = (lead) => {
-    dispatch(updateLead(lead._id, { isArchived: false }, { loading: false }))
-      .then(() => dispatch(getLeads()));
+    dispatch(updateLead(lead._id, { isArchived: false }, { loading: false })).then(() =>
+      dispatch(getLeads())
+    );
   };
   const handleOpenAttachmentModal = (leadId) => {
     setSelectedLeadId(leadId);
@@ -388,9 +423,15 @@ function Leads({ type, showSidebar }) {
     setOpenDeleteModal(true);
     setSelectedLeadId(leadId);
   };
-  const handleOpenViewModal = (leadId) => {
+  const handleOpenViewModal = (leadId, event) => {
     dispatch(getLeadReducer(leadId));
-    navigate(`/leads/${leadId}`);
+    const url = `/leads/${leadId}`;
+
+    if (event.ctrlKey || event.metaKey) {
+      window.open(url, "_blank");
+    } else {
+      navigate(url);
+    }
   };
   const navigateToRefund = (lead) => {
     if (lead.isAppliedForRefund) {
@@ -400,8 +441,8 @@ function Leads({ type, showSidebar }) {
     }
   };
 
-  if(error == "Request failed with status code 400") {
-    alert("Phone Number Already Exists")
+  if (error == "Request failed with status code 400") {
+    alert("Phone Number Already Exists");
   }
 
   return (

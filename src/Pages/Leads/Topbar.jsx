@@ -5,13 +5,26 @@ import { Path } from "../../utils";
 import { Chip, FormControl, Input, InputAdornment, Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getEmployeeLeads, getLeads, searchLead } from "../../redux/action/lead";
-import { PiArchive, PiChartBar, PiMagnifyingGlass, PiNote } from "react-icons/pi";
+import { PiArchive, PiChartBar, PiMagnifyingGlass, PiNote, PiUploadSimple } from "react-icons/pi";
+import { IoRefresh } from "react-icons/io5";
 import { FiFilter, FiList, FiUser } from "react-icons/fi";
 import CreateLead from "./CreateLead";
+import UploadLeads from "./UploadLeads";
 
-const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, setOpenFilters, search, setSearch }) => {
+const Topbar = ({
+  options,
+  setOptions,
+  isFiltered,
+  setIsFiltered,
+  openFilters,
+  setOpenFilters,
+  search,
+  setSearch,
+}) => {
   ////////////////////////////////////////// VARIABLES //////////////////////////////////////
-  const navigate = useNavigate();
+   const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { leads, allLeads, isFetching, error } = useSelector((state) => state.lead);
   const { pathname } = useLocation();
   const title = pathname.split("/")[1];
   const pathArr = pathname.split("/").filter((item) => item != "");
@@ -19,6 +32,7 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
 
   ////////////////////////////////////////// STATES //////////////////////////////////////
   const [open, setOpen] = useState(false);
+  const [openUpload, setOpenUpload] = useState(false);
   const [scroll, setScroll] = React.useState("paper");
   const descriptionElementRef = React.useRef(null);
 
@@ -56,7 +70,7 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
   const handleToggleIsKanbanView = () => {
     setOptions((pre) => ({ ...pre, isKanbanView: !options?.isKanbanView }));
   };
-  
+
   const handleToggleFilters = () => {
     setOpenFilters((pre) => !pre);
   };
@@ -65,6 +79,19 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
     setOpen(true);
     setScroll(scrollType);
   };
+
+  const handleToggleUploadLeads = (scrollType) => () => {
+    setOpenUpload(true);
+    setScroll(scrollType);
+  };
+
+  const handleRefreshLeads = () => {
+    if (options?.showEmployeeLeads) {
+      dispatch(getEmployeeLeads());
+    } else {
+      dispatch(getLeads());
+    }
+  }
 
   return (
     <div className="flex flex-col tracking-wide pb-8 font-primary">
@@ -77,14 +104,9 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
 
         {showOptionButtons && (
           <div className="flex items-center justify-end gap-2 md:mt-0 mt-4">
-            {
-              isFiltered &&
-              <Chip
-                label="Filtered"
-                onDelete={() => setIsFiltered(false)}
-                deleteIcon={<Close />}
-              />
-            }
+            {isFiltered && (
+              <Chip label="Filtered" onDelete={() => setIsFiltered(false)} deleteIcon={<Close />} />
+            )}
             <div className="bg-[#ebf2f5] hover:bg-[#dfe6e8] p-1 pl-2 pr-2 rounded-md w-48">
               <FormControl>
                 <Input
@@ -100,54 +122,69 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
                 />
               </FormControl>
             </div>
+            <Tooltip title="Refresh" arrow placement="top">
+              <div
+                onClick={handleRefreshLeads}
+                className={` p-2 rounded-md cursor-pointer active:text-[#20aee3] bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]`}>
+                <IoRefresh className="text-[25px]" />
+              </div>
+            </Tooltip>
             <Tooltip title="Archived" arrow placement="top">
               <div
                 onClick={handleToggleShowArchivedLeads}
-                className={` p-2 rounded-md cursor-pointer ${options?.showArchivedLeads
-                  ? "text-[#20aee3] bg-[#e4f1ff]"
-                  : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
-                  }`}>
+                className={` p-2 rounded-md cursor-pointer ${
+                  options?.showArchivedLeads
+                    ? "text-[#20aee3] bg-[#e4f1ff]"
+                    : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
+                }`}>
                 <PiArchive className="text-[25px]" />
               </div>
             </Tooltip>
             <Tooltip title="My Leads" arrow placement="top">
               <div
                 onClick={handleToggleShowEmployeeLeads}
-                className={` p-2 rounded-md cursor-pointer ${options?.showEmployeeLeads
-                  ? "text-[#20aee3] bg-[#e4f1ff]"
-                  : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
-                  }`}>
+                className={` p-2 rounded-md cursor-pointer ${
+                  options?.showEmployeeLeads
+                    ? "text-[#20aee3] bg-[#e4f1ff]"
+                    : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
+                }`}>
                 <FiUser className="text-[25px] " />
               </div>
             </Tooltip>
             <Tooltip title="View" arrow placement="top">
               <div
                 onClick={handleToggleIsKanbanView}
-                className={` p-2 rounded-md cursor-pointer ${options?.isKanbanView
-                  ? "text-[#20aee3] bg-[#e4f1ff]"
-                  : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
-                  }`}>
+                className={` p-2 rounded-md cursor-pointer ${
+                  options?.isKanbanView
+                    ? "text-[#20aee3] bg-[#e4f1ff]"
+                    : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
+                }`}>
                 <FiList className="text-[25px] " />
               </div>
             </Tooltip>
             <Tooltip title="Filter" arrow placement="top">
               <div
                 onClick={handleToggleFilters}
-                className={` p-2 rounded-md cursor-pointer ${openFilters
-                  ? "text-[#20aee3] bg-[#e4f1ff]"
-                  : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
-                  }`}>
+                className={` p-2 rounded-md cursor-pointer ${
+                  openFilters
+                    ? "text-[#20aee3] bg-[#e4f1ff]"
+                    : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
+                }`}>
                 <FiFilter className="text-[25px] " />
               </div>
             </Tooltip>
             <Tooltip title="Call Reminders" arrow placement="top">
               <div
-                onClick={()=>navigate('/leads/call-reminders')}
-                className={` p-2 rounded-md cursor-pointer ${openFilters
-                  ? "text-[#20aee3] bg-[#e4f1ff]"
-                  : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
-                  }`}>
+                onClick={() => navigate("/leads/call-reminders")}
+                className={` p-2 rounded-md cursor-pointer ${"bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"}`}>
                 <PiNote className="text-[25px] " />
+              </div>
+            </Tooltip>
+            <Tooltip title="Upload Leads" arrow placement="top">
+              <div
+                onClick={handleToggleUploadLeads("body")}
+                className={` p-2 rounded-md cursor-pointer ${"bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"}`}>
+                <PiUploadSimple className="text-[25px] " />
               </div>
             </Tooltip>
             <div>
@@ -163,6 +200,7 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
         )}
       </div>
 
+      <UploadLeads scroll={scroll} open={openUpload} setOpen={setOpenUpload} />
       <CreateLead scroll={scroll} open={open} setOpen={setOpen} />
     </div>
   );

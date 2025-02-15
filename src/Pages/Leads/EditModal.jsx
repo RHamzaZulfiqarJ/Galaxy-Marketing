@@ -53,17 +53,6 @@ const EditModal = ({ open, setOpen, scroll, leadId }) => {
     { name: "Google", value: "google" },
     { name: "Referral", value: "referral" },
   ];
-  const degrees = [
-    { name: "Bacholers", value: "bacholers" },
-    { name: "Masters", value: "masters" },
-    { name: "PHD", value: "phd" },
-    { name: "Diploma", value: "diploma" },
-    { name: "Other", value: "other" },
-  ];
-  const Visa = [
-    { name: "Student Visa", value: "studentVisa" },
-    { name: "Visit Visa", value: "visitVisa" },
-  ];
 
   let initialLeadState = {
     clientName: "",
@@ -128,10 +117,9 @@ const EditModal = ({ open, setOpen, scroll, leadId }) => {
   };
 
   const handleClose = () => {
-    setLeadData(initialLeadState)
+    setLeadData(initialLeadState);
     setOpen(false);
   };
-
 
   return (
     <div>
@@ -162,9 +150,7 @@ const EditModal = ({ open, setOpen, scroll, leadId }) => {
                 <td className="pb-4 text-lg">Client Name </td>
                 <td className="pb-4">
                   <TextField
-                    value={
-                      leadData?.clientName
-                    }
+                    value={leadData?.clientName || leadData?.client?.clientName || ""}
                     name={"clientName"}
                     onChange={(e) => handleChange("clientName", e.target.value)}
                     size="small"
@@ -178,7 +164,7 @@ const EditModal = ({ open, setOpen, scroll, leadId }) => {
                   <TextField
                     name="clientPhone"
                     onChange={(e) => handleChange("clientPhone", e.target.value)}
-                    value={leadData?.clientPhone}
+                    value={leadData?.clientPhone || leadData?.client?.phone || ""}
                     type="number"
                     size="small"
                     fullWidth
@@ -202,7 +188,7 @@ const EditModal = ({ open, setOpen, scroll, leadId }) => {
                     value={leadData?.city}
                     onChange={(e) => handleChange("city", e.target.value)}
                     className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
-                    <option value="">Select Country</option>
+                    <option value="">Select City</option>
                     {pakistanCities.map((city, key) => (
                       <option key={key} value={city}>
                         {city}
@@ -215,12 +201,12 @@ const EditModal = ({ open, setOpen, scroll, leadId }) => {
                 <td className="pb-4 text-lg">Project </td>
                 <td className="pb-4">
                   <CFormSelect
-                    value={leadData?.property?.title}
+                    value={leadData?.property?._id || leadData.property || ""}
                     onChange={(e) => handleChange("property", e.target.value)}
                     className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
-                    <option value="">Select Degree</option>
-                    {projects.map((item, key) => (
-                      <option key={item._id} value={item.title}>
+                    <option value="">Select Project</option>
+                    {projects.map((item) => (
+                      <option key={item._id} value={item._id}>
                         {item.title}
                       </option>
                     ))}

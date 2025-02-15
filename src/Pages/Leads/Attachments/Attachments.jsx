@@ -28,13 +28,14 @@ const Attachments = ({ open, setOpen, leadId }) => {
       leadId && dispatch(getLead(leadId))
     }
   }, [leadId, open])
+
   useEffect(() => {
-    currentLead
-      ?
-      dispatch(setUrlsReducer([...currentLead?.images]))
-      :
-      setOpen(false)
-  }, [currentLead])
+  if (currentLead?.images && Array.isArray(currentLead.images)) {
+    dispatch(setUrlsReducer([...currentLead.images]));
+  } else {
+    setOpen(false);
+  }
+}, [currentLead]);
 
   ////////////////////////////////////// FUNCTIONS  /////////////////////////////////////
   const handleClickOpen = () => {

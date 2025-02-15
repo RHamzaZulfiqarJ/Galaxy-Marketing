@@ -127,7 +127,7 @@ const Signup = () => {
 
   return (
     <div className="font-primary w-full h-full bg-[#F6F9FA]">
-      <div className="fixed bottom-0 left-0 h-[52%] w-[25%]">
+      <div className="lg:visible invisible fixed bottom-0 left-0 h-[52%] w-[25%]">
         <img src="/images/login-1.png" alt="Login Illustration" />
       </div>
       <div className="pb-10">

@@ -15,7 +15,9 @@ import { getProjects } from "../../redux/action/project";
 import { CFormSelect } from "@coreui/react";
 
 const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
+  
   //////////////////////////////// VARIABLES ///////////////////////////////////////////////////
+
   const dispatch = useDispatch();
   const { projects } = useSelector((state) => state.project);
   const { employees } = useSelector((state) => state.user);
@@ -32,15 +34,16 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
   ];
 
   const statuses = [
-    "newClient",
-    "followUp",
-    "contactedClient",
-    "callNotAttend",
-    "visitDone",
-    "visitSchedule",
-    "closedWon",
-    "closedLost",
-  ];
+    { name: "New Client", value: "newClient"},
+    { name: "Follow Up", value: "followUp"},
+    { name: "Contacted Client", value: "contactedClient"},
+    { name: "Call Not Attend", value: "callNotAttend"},
+    { name: "Visit Done", value: "visitDone"},
+    { name: "Visit Schedule", value: "visitSchedule"},
+    { name: "Closed - Won", value: "closedWon"},
+    { name: "Closed - Lost", value: "closedLost"},
+  ]
+
   const sources = [
     "Facebook",
     "Instagram",
@@ -50,17 +53,16 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
     "Direct Call",
     "Referral",
   ];
-  const degrees = ["Bacholers", "Masters", "PHD", "Other"];
-  const visa = ["Student Visa", "Visit Visa"];
+  
   const initialFilterState = {
     city: "",
     startingDate: "",
     endingDate: "",
     status: "",
     priority: "",
-    country: "",
-    degree: "",
-    visa: "",
+    source: "",
+    project: "",
+    employee: "",
   };
 
   const projectList = projects.map((project) => ({
@@ -165,6 +167,8 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
             disablePortal
             id="combo-box-demo"
             options={statuses}
+            getOptionLabel={(option) => option.name} // Customize the displayed option
+            getOptionSelected={(option, value) => option.value === value} // Compare by the 'value' property
             onSelect={(e) => handleChange("status", e.target.value)}
             className="w-full"
             renderInput={(params) => (

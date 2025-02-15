@@ -78,7 +78,6 @@ const CreateFollowUps = ({ setOpen, open, scroll }) => {
       console.log(error);
     } finally {
       setOpen(false);
-      navigate('/leads/call-reminders')
     }
   };
 

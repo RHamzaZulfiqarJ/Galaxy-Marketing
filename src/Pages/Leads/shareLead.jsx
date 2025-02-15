@@ -29,7 +29,7 @@ const ShiftLead = ({ open, setOpen }) => {
   .filter((employee) => employee.username != null && employee.username != undefined)
   .filter((employee) => {
     // Check if employee._id does not match any currentLead?.allocatedTo._id
-    return currentLead?.allocatedTo.every((allocatedTo) => allocatedTo._id != employee._id);
+    return currentLead?.allocatedTo?.every((allocatedTo) => allocatedTo._id != employee._id);
   })
   .map(({ _id, username }) => ({ _id, username }));
 

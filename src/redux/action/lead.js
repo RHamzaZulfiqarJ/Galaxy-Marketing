@@ -98,6 +98,17 @@ export const createLead = (leadData, navigate) => async (dispatch) => {
     }
 }
 
+export const uploadLeadsAction = (leads) => async (dispatch) => {
+    try {
+      dispatch(start());
+      const { data } = await api.uploadLeads(leads);
+      dispatch(createLeadReducer(data.result));
+      dispatch(end());
+    } catch (err) {
+      dispatch(error(err.message));
+    }
+  };
+
 export const updateLead = (leadId, leadData, options) => async (dispatch) => {
     try {
         !options?.loading ? null : dispatch(start())

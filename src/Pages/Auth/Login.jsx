@@ -77,7 +77,7 @@ const Login = () => {
 
   return (
     <div className="font-primary">
-      <div className="fixed bottom-3 left-3 h-[53%] w-[28%]">
+      <div className="lg:visible invisible fixed bottom-3 left-3 h-[53%] w-[28%]">
         <img src="/images/login-1.png" alt="Login Illustration" />
       </div>
       <div className="w-full h-screen flex flex-col items-center justify-center">

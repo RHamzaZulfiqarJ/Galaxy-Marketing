@@ -121,10 +121,6 @@ const Lead = () => {
         <FollowUps />
       </div>
 
-      <div className="p-4 mt-4 bg-white w-full">
-        <Ledger />
-      </div>
-
     </div>
   );
 };
